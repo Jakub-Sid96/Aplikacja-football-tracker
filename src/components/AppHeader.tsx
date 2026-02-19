@@ -55,8 +55,10 @@ const AppHeader: React.FC = () => {
               {currentUser.role === 'trainer' ? 'Trener' : 'Rodzic'}
             </span>
           </div>
-          <button className="btn-logout" onClick={handleLogout}>
+          <button className="btn-neon" onClick={handleLogout}>
+            <span className="neon-glow-top" />
             Wyloguj
+            <span className="neon-glow-bottom" />
           </button>
         </div>
       </div>

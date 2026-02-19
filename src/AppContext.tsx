@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Child, Group, JoinRequest, Session, Report, Notification } from './types';
+import { Child, Group, JoinRequest, Session, Report, Notification, ProgressEntry, CalendarEvent } from './types';
 import { useAuth } from './AuthContext';
 
 // ============================================================
@@ -18,6 +18,10 @@ const GROUPS_KEY = 'ft-groups';
 const CHILDREN_KEY = 'ft-children';
 const JOIN_REQUESTS_KEY = 'ft-join-requests';
 const NOTIFICATIONS_KEY = 'ft-notifications';
+const PROGRESS_KEY = 'ft-progress';
+const CALENDAR_KEY = 'ft-calendar-events';
+const READ_SESSIONS_KEY = 'ft-read-sessions';
+const READ_PROGRESS_KEY = 'ft-read-progress';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   const stored = localStorage.getItem(key);
@@ -33,6 +37,7 @@ interface AppState {
   reports: Report[];
   joinRequests: JoinRequest[];
   notifications: Notification[];
+  progressEntries: ProgressEntry[];
 
   // Grupy
   addGroup: (group: Group) => void;
@@ -84,6 +89,25 @@ interface AppState {
   // Niewypełnione sesje dziecka (bez raportu lub draft)
   getPendingSessionsCountForChild: (childId: string, groupId: string) => number;
 
+  // Postępy zawodnika
+  addProgressEntry: (entry: ProgressEntry) => void;
+  getProgressEntriesForChild: (childId: string) => ProgressEntry[];
+
+  // Śledzenie odczytów (rodzic)
+  markSessionsRead: (childId: string, sessionIds: string[]) => void;
+  isSessionRead: (childId: string, sessionId: string) => boolean;
+  getUnreadSessionCount: (childId: string, groupId: string) => number;
+  markProgressRead: (childId: string, progressIds: string[]) => void;
+  isProgressRead: (childId: string, progressId: string) => boolean;
+  getUnreadProgressCount: (childId: string) => number;
+
+  // Kalendarz
+  calendarEvents: CalendarEvent[];
+  addCalendarEvent: (event: CalendarEvent) => void;
+  updateCalendarEvent: (event: CalendarEvent) => void;
+  deleteCalendarEvent: (eventId: string) => void;
+  getCalendarEventsForGroup: (groupId: string) => CalendarEvent[];
+
   // Wyszukiwanie trenerów
   searchTrainers: (query: string) => { id: string; name: string; groups: Group[] }[];
 }
@@ -99,6 +123,11 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   const [reports, setReports] = useState<Report[]>(() => loadFromStorage(REPORTS_KEY, []));
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>(() => loadFromStorage(JOIN_REQUESTS_KEY, []));
   const [notifications, setNotifications] = useState<Notification[]>(() => loadFromStorage(NOTIFICATIONS_KEY, []));
+  const [progressEntries, setProgressEntries] = useState<ProgressEntry[]>(() => loadFromStorage(PROGRESS_KEY, []));
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(() => loadFromStorage(CALENDAR_KEY, []));
+  // Śledzenie odczytów: Record<childId, string[]> — lista ID sesji/postępów odczytanych
+  const [readSessions, setReadSessions] = useState<Record<string, string[]>>(() => loadFromStorage(READ_SESSIONS_KEY, {}));
+  const [readProgress, setReadProgress] = useState<Record<string, string[]>>(() => loadFromStorage(READ_PROGRESS_KEY, {}));
 
   // Persystencja
   useEffect(() => { localStorage.setItem(GROUPS_KEY, JSON.stringify(groups)); }, [groups]);
@@ -107,6 +136,30 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   useEffect(() => { localStorage.setItem(REPORTS_KEY, JSON.stringify(reports)); }, [reports]);
   useEffect(() => { localStorage.setItem(JOIN_REQUESTS_KEY, JSON.stringify(joinRequests)); }, [joinRequests]);
   useEffect(() => { localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications)); }, [notifications]);
+  useEffect(() => { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressEntries)); }, [progressEntries]);
+  useEffect(() => { localStorage.setItem(CALENDAR_KEY, JSON.stringify(calendarEvents)); }, [calendarEvents]);
+  useEffect(() => { localStorage.setItem(READ_SESSIONS_KEY, JSON.stringify(readSessions)); }, [readSessions]);
+  useEffect(() => { localStorage.setItem(READ_PROGRESS_KEY, JSON.stringify(readProgress)); }, [readProgress]);
+
+  // Migracja: backfill joinedGroupAt dla dzieci już w grupie
+  useEffect(() => {
+    const needsBackfill = children.filter(c => c.groupId && !c.joinedGroupAt);
+    if (needsBackfill.length === 0) return;
+
+    setChildren(prev => prev.map(c => {
+      if (!c.groupId || c.joinedGroupAt) return c;
+
+      // Szukaj zaakceptowanego JoinRequest dla tego dziecka w tej grupie
+      const acceptedRequest = joinRequests.find(
+        r => r.childId === c.id && r.groupId === c.groupId && r.status === 'accepted'
+      );
+
+      return {
+        ...c,
+        joinedGroupAt: acceptedRequest?.createdAt ?? new Date().toISOString(),
+      };
+    }));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // === GRUPY ===
 
@@ -126,6 +179,8 @@ export function AppProvider({ children: reactChildren }: { children: React.React
       setReports(r => r.filter(rep => !sessionIds.includes(rep.sessionId)));
       return prev.filter(s => s.groupId !== groupId);
     });
+    // Usuwamy wydarzenia kalendarza
+    setCalendarEvents(prev => prev.filter(e => e.groupId !== groupId));
     // Odpinamy dzieci z grupy
     setChildren(prev => prev.map(c =>
       c.groupId === groupId ? { ...c, groupId: undefined, trainerId: undefined } : c
@@ -154,7 +209,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
 
   const removeChildFromGroup = useCallback((childId: string) => {
     setChildren(prev => prev.map(c =>
-      c.id === childId ? { ...c, groupId: undefined, trainerId: undefined } : c
+      c.id === childId ? { ...c, groupId: undefined, trainerId: undefined, joinedGroupAt: undefined } : c
     ));
   }, []);
 
@@ -162,7 +217,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
     const targetGroup = groups.find(g => g.id === newGroupId);
     if (!targetGroup) return;
     setChildren(prev => prev.map(c =>
-      c.id === childId ? { ...c, groupId: newGroupId, trainerId: targetGroup.trainerId } : c
+      c.id === childId ? { ...c, groupId: newGroupId, trainerId: targetGroup.trainerId, joinedGroupAt: new Date().toISOString() } : c
     ));
   }, [groups]);
 
@@ -209,7 +264,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
       if (r.id === requestId) {
         setChildren(prevChildren => prevChildren.map(c =>
           c.id === r.childId
-            ? { ...c, groupId: r.groupId, trainerId: r.trainerId }
+            ? { ...c, groupId: r.groupId, trainerId: r.trainerId, joinedGroupAt: new Date().toISOString() }
             : c
         ));
         return { ...r, status: 'accepted' as const };
@@ -329,14 +384,113 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   }, [notifications]);
 
   // === NIEWYPEŁNIONE SESJE DZIECKA ===
-  // Liczy sesje w grupie, dla których dziecko nie ma jeszcze raportu submitted
+  // Liczy sesje w grupie, dla których dziecko nie ma jeszcze raportu submitted.
+  // Uwzględnia joinedGroupAt – sesje sprzed dołączenia do grupy nie są liczone.
   const getPendingSessionsCountForChild = useCallback((childId: string, groupId: string) => {
-    const groupSessions = sessions.filter(s => s.groupId === groupId);
+    const child = children.find(c => c.id === childId);
+    const joinedAt = child?.joinedGroupAt;
+    const groupSessions = sessions.filter(s =>
+      s.groupId === groupId && (!joinedAt || s.date >= joinedAt)
+    );
     return groupSessions.filter(s => {
       const report = reports.find(r => r.sessionId === s.id && r.childId === childId);
       return !report || report.status !== 'submitted';
     }).length;
-  }, [sessions, reports]);
+  }, [sessions, reports, children]);
+
+  // === POSTĘPY ZAWODNIKA ===
+
+  const addProgressEntry = useCallback((entry: ProgressEntry) => {
+    setProgressEntries(prev => [entry, ...prev]);
+
+    // Powiadomienie dla rodzica
+    const child = children.find(c => c.id === entry.childId);
+    if (child) {
+      const periodLabel = entry.period === 'week' ? 'tydzień' : 'miesiąc';
+      const notification: Notification = {
+        id: `notif-${Date.now()}-prog`,
+        userId: child.parentId,
+        message: `Trener dodał nowe postępy dla ${child.name} (okres: ${periodLabel})`,
+        read: false,
+        createdAt: new Date().toISOString(),
+        actionType: 'progress_entry',
+        actionId: entry.id,
+      };
+      setNotifications(prev => [notification, ...prev]);
+    }
+  }, [children]);
+
+  const getProgressEntriesForChild = useCallback((childId: string) => {
+    return progressEntries
+      .filter(e => e.childId === childId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [progressEntries]);
+
+  // === ŚLEDZENIE ODCZYTÓW (RODZIC) ===
+
+  const markSessionsRead = useCallback((childId: string, sessionIds: string[]) => {
+    setReadSessions(prev => {
+      const existing = new Set(prev[childId] || []);
+      sessionIds.forEach(id => existing.add(id));
+      return { ...prev, [childId]: Array.from(existing) };
+    });
+  }, []);
+
+  const isSessionRead = useCallback((childId: string, sessionId: string) => {
+    return (readSessions[childId] || []).includes(sessionId);
+  }, [readSessions]);
+
+  const getUnreadSessionCount = useCallback((childId: string, groupId: string) => {
+    const child = children.find(c => c.id === childId);
+    const joinedAt = child?.joinedGroupAt;
+    const groupSessions = sessions.filter(s =>
+      s.groupId === groupId && (!joinedAt || s.date >= joinedAt)
+    );
+    const readSet = new Set(readSessions[childId] || []);
+    return groupSessions.filter(s => !readSet.has(s.id)).length;
+  }, [sessions, readSessions, children]);
+
+  const markProgressRead = useCallback((childId: string, progressIds: string[]) => {
+    setReadProgress(prev => {
+      const existing = new Set(prev[childId] || []);
+      progressIds.forEach(id => existing.add(id));
+      return { ...prev, [childId]: Array.from(existing) };
+    });
+  }, []);
+
+  const isProgressRead = useCallback((childId: string, progressId: string) => {
+    return (readProgress[childId] || []).includes(progressId);
+  }, [readProgress]);
+
+  const getUnreadProgressCount = useCallback((childId: string) => {
+    const entries = progressEntries.filter(e => e.childId === childId);
+    const readSet = new Set(readProgress[childId] || []);
+    return entries.filter(e => !readSet.has(e.id)).length;
+  }, [progressEntries, readProgress]);
+
+  // === KALENDARZ ===
+
+  const addCalendarEvent = useCallback((event: CalendarEvent) => {
+    setCalendarEvents(prev => [event, ...prev]);
+  }, []);
+
+  const updateCalendarEvent = useCallback((updated: CalendarEvent) => {
+    setCalendarEvents(prev => prev.map(e => e.id === updated.id ? updated : e));
+  }, []);
+
+  const deleteCalendarEvent = useCallback((eventId: string) => {
+    setCalendarEvents(prev => prev.filter(e => e.id !== eventId));
+  }, []);
+
+  const getCalendarEventsForGroup = useCallback((groupId: string) => {
+    return calendarEvents
+      .filter(e => e.groupId === groupId)
+      .sort((a, b) => {
+        const dateCompare = a.date.localeCompare(b.date);
+        if (dateCompare !== 0) return dateCompare;
+        return a.time.localeCompare(b.time);
+      });
+  }, [calendarEvents]);
 
   // === WYSZUKIWANIE TRENERÓW ===
   const searchTrainers = useCallback((query: string) => {
@@ -355,7 +509,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   }, [allUsers, groups]);
 
   const value: AppState = {
-    groups, children, sessions, reports, joinRequests, notifications,
+    groups, children, sessions, reports, joinRequests, notifications, progressEntries, calendarEvents,
     addGroup, updateGroup, deleteGroup, getGroupsForTrainer, getGroupById,
     addChild, updateChild, removeChildFromGroup, moveChildToGroup, getChildrenForParent, getChildrenForTrainer, getChildrenForGroup, getChildById,
     sendJoinRequest, acceptJoinRequest, rejectJoinRequest,
@@ -365,6 +519,10 @@ export function AppProvider({ children: reactChildren }: { children: React.React
     getReportForSessionAndChild, getSubmittedReportsForSession, getSubmittedReportsForChild,
     addNotification, markNotificationRead, getUnreadNotifications, getNotificationsForUser,
     getPendingSessionsCountForChild,
+    addProgressEntry, getProgressEntriesForChild,
+    markSessionsRead, isSessionRead, getUnreadSessionCount,
+    markProgressRead, isProgressRead, getUnreadProgressCount,
+    addCalendarEvent, updateCalendarEvent, deleteCalendarEvent, getCalendarEventsForGroup,
     searchTrainers,
   };
 

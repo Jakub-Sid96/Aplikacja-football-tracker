@@ -12,6 +12,7 @@ import TrainerDashboard from './components/TrainerDashboard';
 import GroupView from './components/GroupView';
 import SessionBuilder from './components/SessionBuilder';
 import ChildNotebook from './components/ChildNotebook';
+import CalendarPage from './components/CalendarPage';
 import './App.css';
 
 // ============================================================
@@ -23,13 +24,13 @@ import './App.css';
 //
 // RODZIC (chronione):
 //   /parent             → dashboard rodzica (dzieci, prośby)
-//   /parent/sessions/:childId     → lista raportów postępów dla dziecka
+//   /parent/sessions/:childId     → lista raportów meczowych/treningowych dla dziecka
 //   /parent/report/:sessionId/:childId → formularz raportu
 //
 // TRENER (chronione):
 //   /trainer                                → dashboard (grupy + prośby)
-//   /trainer/group/:groupId                 → widok grupy (raporty postępów + zawodnicy)
-//   /trainer/group/:groupId/new-session     → kreator nowego raportu postępów w grupie
+//   /trainer/group/:groupId                 → widok grupy (raporty meczowe/treningowe + zawodnicy)
+//   /trainer/group/:groupId/new-session     → kreator nowego raportu meczowego/treningowego w grupie
 //   /trainer/group/:groupId/child/:childId  → notatnik zawodnika w grupie
 // ============================================================
 
@@ -91,6 +92,11 @@ const AppRoutes: React.FC = () => {
             <AuthenticatedLayout><ParentSessionList /></AuthenticatedLayout>
           </ProtectedRoute>
         } />
+        <Route path="/parent/calendar/:childId" element={
+          <ProtectedRoute requiredRole="parent">
+            <AuthenticatedLayout><CalendarPage /></AuthenticatedLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/parent/report/:sessionId/:childId" element={
           <ProtectedRoute requiredRole="parent">
             <AuthenticatedLayout><ParentReportForm /></AuthenticatedLayout>
@@ -111,6 +117,11 @@ const AppRoutes: React.FC = () => {
         <Route path="/trainer/group/:groupId/new-session" element={
           <ProtectedRoute requiredRole="trainer">
             <AuthenticatedLayout><SessionBuilder /></AuthenticatedLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/trainer/group/:groupId/calendar" element={
+          <ProtectedRoute requiredRole="trainer">
+            <AuthenticatedLayout><CalendarPage /></AuthenticatedLayout>
           </ProtectedRoute>
         } />
         <Route path="/trainer/group/:groupId/child/:childId" element={

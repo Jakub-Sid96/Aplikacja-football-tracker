@@ -1,5 +1,5 @@
 // === MODEL DANYCH ===
-// Architektura: Trener → Grupy → (Raporty postępów + Zawodnicy)
+// Architektura: Trener → Grupy → (Raporty meczowe/treningowe + Zawodnicy)
 // Wszystko jest per-grupa. Trener pracuje zawsze w kontekście grupy.
 
 export interface User {
@@ -14,7 +14,7 @@ export interface User {
 export type UserRole = 'parent' | 'trainer';
 
 // Grupa treningowa – centralny punkt organizacji.
-// Raporty postępów i zawodnicy należą do grupy, nie bezpośrednio do trenera.
+// Raporty meczowe/treningowe i zawodnicy należą do grupy, nie bezpośrednio do trenera.
 export interface Group {
   id: string;
   name: string;
@@ -29,6 +29,7 @@ export interface Child {
   parentId: string;
   groupId?: string;
   trainerId?: string;
+  joinedGroupAt?: string;  // ISO timestamp dołączenia do bieżącej grupy
 }
 
 // Prośba o dołączenie dziecka do grupy.
@@ -49,8 +50,8 @@ export interface Category {
   type: 'counter' | 'text';
 }
 
-// Raport postępów – kluczowa zmiana: należy do GRUPY (groupId),
-// nie bezpośrednio do trenera. Trener tworzy raport postępów w kontekście grupy.
+// Raport meczowy/treningowy – kluczowa zmiana: należy do GRUPY (groupId),
+// nie bezpośrednio do trenera. Trener tworzy raport meczowy/treningowy w kontekście grupy.
 // Widoczna tylko dla rodziców dzieci z tej grupy.
 export interface Session {
   id: string;
@@ -58,7 +59,7 @@ export interface Session {
   date: string;
   categories: Category[];
   trainerId: string;
-  groupId: string;  // NOWE: raport postępów przypisany do grupy
+  groupId: string;  // NOWE: raport meczowy/treningowy przypisany do grupy
 }
 
 // Raport rodzica – bez zmian w strukturze.
@@ -73,6 +74,30 @@ export interface Report {
   submittedAt?: string;
 }
 
+// Wpis postępów zawodnika – tworzony przez trenera dla konkretnego dziecka.
+export interface ProgressEntry {
+  id: string;
+  childId: string;
+  groupId: string;
+  trainerId: string;
+  period: 'week' | 'month';
+  description: string;
+  createdAt: string;
+}
+
+// Wydarzenie kalendarzowe – przypisane do grupy, tworzone przez trenera.
+export interface CalendarEvent {
+  id: string;
+  groupId: string;
+  title: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:MM
+  location: string;
+  createdBy: string; // trainerId
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Powiadomienie.
 export interface Notification {
   id: string;
@@ -80,6 +105,6 @@ export interface Notification {
   message: string;
   read: boolean;
   createdAt: string;
-  actionType?: 'join_request';
+  actionType?: 'join_request' | 'progress_entry';
   actionId?: string;
 }

@@ -80,7 +80,7 @@ const RegisterPage: React.FC = () => {
             >
               <span className="role-option-icon">⚽</span>
               <span className="role-option-label">Trener</span>
-              <span className="role-option-desc">Tworzysz grupy i raporty postępów</span>
+              <span className="role-option-desc">Tworzysz grupy i raporty meczowe/treningowe</span>
             </button>
           </div>
         </div>

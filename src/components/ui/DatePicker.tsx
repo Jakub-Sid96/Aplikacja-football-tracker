@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface DatePickerFieldProps {
   label?: string;
@@ -127,24 +127,34 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  const prevMonth = useCallback(() => {
-    setViewMonth(m => {
-      if (m === 0) { setViewYear(y => y - 1); return 11; }
-      return m - 1;
-    });
-  }, []);
+  const prevMonth = () => {
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(y => y - 1);
+    } else {
+      setViewMonth(m => m - 1);
+    }
+  };
 
-  const nextMonth = useCallback(() => {
-    setViewMonth(m => {
-      if (m === 11) { setViewYear(y => y + 1); return 0; }
-      return m + 1;
-    });
-  }, []);
+  const nextMonth = () => {
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(y => y + 1);
+    } else {
+      setViewMonth(m => m + 1);
+    }
+  };
 
   const selectDate = (iso: string) => {
     onChange(iso);
     setOpen(false);
   };
+
+  const currentRealYear = new Date().getFullYear();
+  const minYear = Math.min(1920, viewYear);
+  const maxYear = Math.max(currentRealYear + 5, viewYear);
+  const yearOptions: number[] = [];
+  for (let y = minYear; y <= maxYear; y++) yearOptions.push(y);
 
   const days = getCalendarDays(viewYear, viewMonth);
 
@@ -205,9 +215,28 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
                 </svg>
               </button>
 
-              <span className="dp-month-label">
-                {MONTHS_PL[viewMonth]} {viewYear}
-              </span>
+              <div className="dp-selects">
+                <select
+                  className="dp-select dp-select--month"
+                  value={viewMonth}
+                  onChange={e => setViewMonth(Number(e.target.value))}
+                  aria-label="Miesiąc"
+                >
+                  {MONTHS_PL.map((name, i) => (
+                    <option key={i} value={i}>{name}</option>
+                  ))}
+                </select>
+                <select
+                  className="dp-select dp-select--year"
+                  value={viewYear}
+                  onChange={e => setViewYear(Number(e.target.value))}
+                  aria-label="Rok"
+                >
+                  {yearOptions.map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
 
               <button
                 type="button"

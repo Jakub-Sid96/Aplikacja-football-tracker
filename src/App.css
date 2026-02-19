@@ -208,30 +208,60 @@ main {
   left: 5px;
 }
 
-.btn-logout {
-  padding: 0.35rem 0.7rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
+/* Neon Button */
+.btn-neon {
+  position: relative;
+  padding: 0.4rem 1.4rem;
+  background: rgba(59, 130, 246, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 9999px;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
   white-space: nowrap;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.btn-logout:hover {
-  background: rgba(255, 255, 255, 0.25);
+.btn-neon:hover {
+  background: rgba(59, 130, 246, 0);
   color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-.btn-logout:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+.btn-neon:active {
+  transform: scale(0.97);
+}
+
+/* Neon glow lines */
+.neon-glow-top,
+.neon-glow-bottom {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #3b82f6, transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.neon-glow-top {
+  top: 0;
+}
+
+.neon-glow-bottom {
+  bottom: -1px;
+  opacity: 0.3;
+  transition: opacity 0.5s ease;
+}
+
+.btn-neon:hover .neon-glow-top {
+  opacity: 1;
+}
+
+.btn-neon:hover .neon-glow-bottom {
+  opacity: 0.3;
 }
 
 /* ================================================================
@@ -380,6 +410,23 @@ main {
   border-bottom-color: var(--primary);
 }
 
+/* Kolorowe warianty paska aktywnej zakladki */
+.tab-btn.active.tab-status-danger {
+  border-bottom-color: var(--danger);
+}
+
+.tab-btn.active.tab-status-warning {
+  border-bottom-color: var(--warning);
+}
+
+.tab-btn.active.tab-status-success {
+  border-bottom-color: var(--success);
+}
+
+.tab-btn.active.tab-status-default {
+  border-bottom-color: var(--primary);
+}
+
 .tab-badge {
   display: inline-flex;
   align-items: center;
@@ -394,6 +441,19 @@ main {
   padding: 0 5px;
   margin-left: 4px;
   vertical-align: middle;
+}
+
+/* Kolorowe warianty badge */
+.tab-badge-danger {
+  background: var(--danger);
+}
+
+.tab-badge-warning {
+  background: var(--warning);
+}
+
+.tab-badge-success {
+  background: var(--success);
 }
 
 /* ================================================================
@@ -749,16 +809,24 @@ main {
   border-radius: var(--radius);
   padding: 1rem;
   border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .group-card.clickable {
   cursor: pointer;
-  transition: all 0.15s;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .group-card.clickable:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border-color: var(--dark);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+}
+
+.group-card.clickable:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
 }
 
 .group-card-header {
@@ -1237,19 +1305,27 @@ main {
   border-radius: var(--radius);
   padding: 1rem;
   border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .session-card.clickable {
   cursor: pointer;
-  transition: all 0.15s;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .session-card.clickable:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border-color: var(--dark);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
 }
 
-/* Wysłany raport postępów – subtelnie wyszarzona */
+.session-card.clickable:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+/* Wysłany raport – subtelnie wyszarzona */
 .session-card.completed {
   opacity: 0.6;
 }
@@ -1331,6 +1407,25 @@ main {
   color: var(--danger);
 }
 
+/* Nowy / nieodczytany – czerwony */
+.status-badge.new-badge {
+  background: var(--danger);
+  color: white;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+/* Karta sesji z nowa nieodczytana sesja */
+.session-card.session-card-new {
+  border-color: var(--danger);
+  border-width: 1.5px;
+  background: #fff5f5;
+}
+
+.session-card.session-card-new:hover {
+  border-color: var(--danger);
+  box-shadow: 0 2px 12px rgba(220, 38, 38, 0.12);
+}
+
 /* ================================================================
    KARTA DZIECKA
    ================================================================ */
@@ -1339,22 +1434,28 @@ main {
   border-radius: var(--radius);
   padding: 1rem;
   border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .child-card.clickable {
   cursor: pointer;
-  transition: all 0.15s;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .child-card.clickable:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border-color: var(--dark);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
 }
 
-/* Bez .clickable – nie reaguje na hover */
-.child-card:not(.clickable):hover {
-  box-shadow: none;
-  border-color: var(--border);
+.child-card.clickable:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+.child-card.clickable:hover h3 {
+  color: var(--dark);
 }
 
 .child-card-info {
@@ -1388,6 +1489,31 @@ main {
   align-items: flex-end;
   gap: 0.35rem;
   flex-shrink: 0;
+}
+
+/* Mini statusy na karcie dziecka (ParentDashboard) */
+.child-status-dot {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.child-status-dot.danger {
+  background: var(--danger);
+  color: white;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+.child-status-dot.warning {
+  background: var(--warning);
+  color: white;
+}
+
+.child-status-dot.success {
+  background: var(--success);
+  color: white;
 }
 
 /* Badge notyfikacji o nowych sesjach do wypełnienia */
@@ -1600,11 +1726,48 @@ main {
   margin-bottom: 0.75rem;
 }
 
-.dp-month-label {
-  font-size: 0.95rem;
+.dp-selects {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.dp-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: inherit;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text);
-  user-select: none;
+  cursor: pointer;
+  padding: 0.25rem 1.25rem 0.25rem 0.4rem;
+  transition: border-color 0.15s, background 0.15s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.3rem center;
+  max-width: 130px;
+  text-overflow: ellipsis;
+}
+
+.dp-select:hover {
+  border-color: var(--border);
+  background-color: var(--bg);
+}
+
+.dp-select:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+}
+
+.dp-select--year {
+  max-width: 75px;
 }
 
 .dp-nav {
@@ -1805,8 +1968,9 @@ main {
     height: 40px;
   }
 
-  .dp-month-label {
-    font-size: 1rem;
+  .dp-select {
+    font-size: 0.9rem;
+    padding: 0.35rem 1.4rem 0.35rem 0.5rem;
   }
 
   .dp-weekday {
@@ -1816,6 +1980,238 @@ main {
   .dp-quick {
     font-size: 0.9rem;
     padding: 0.5rem 1rem;
+  }
+}
+
+/* ================================================================
+   TIME PICKER (tp-*)
+   Custom time-picker spójny z DatePickerField.
+   ================================================================ */
+
+.tp-wrapper {
+  position: relative;
+}
+
+.tp-field-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+/* ── Trigger ── */
+.tp-trigger-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.tp-trigger-input:hover {
+  border-color: #cbd5e1;
+}
+
+.tp-trigger-input--open,
+.tp-trigger-input:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.tp-trigger-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.tp-trigger-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+/* ── Backdrop (mobile only) ── */
+.tp-backdrop {
+  display: none;
+}
+
+/* ── Panel ── */
+.tp-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.04);
+  animation: tp-fade-in 0.15s ease;
+}
+
+@keyframes tp-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tp-handle-bar {
+  display: none;
+}
+
+/* ── Columns layout ── */
+.tp-columns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tp-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tp-column-header {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 0.4rem;
+  user-select: none;
+}
+
+.tp-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.tp-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tp-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tp-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* ── Option button ── */
+.tp-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tp-option:hover:not(.tp-option--selected) {
+  background: var(--bg);
+}
+
+.tp-option:active:not(.tp-option--selected) {
+  background: var(--border);
+}
+
+.tp-option--selected {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.tp-option--selected:hover {
+  background: var(--primary-hover);
+}
+
+/* ── Mobile: bottom-sheet ── */
+@media (max-width: 600px) {
+  .tp-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.3);
+    animation: tp-backdrop-in 0.2s ease;
+  }
+
+  @keyframes tp-backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .tp-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    z-index: 100;
+    width: auto;
+    border-radius: 16px 16px 0 0;
+    border: none;
+    padding: 0.5rem 1rem 1.5rem;
+    box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.12);
+    max-height: 60vh;
+    animation: tp-slide-up 0.25s ease;
+  }
+
+  @keyframes tp-slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .tp-handle-bar {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0 0.75rem;
+  }
+
+  .tp-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+  }
+
+  .tp-scroll {
+    max-height: 240px;
+  }
+
+  .tp-option {
+    font-size: 1rem;
+    min-height: 44px;
   }
 }
 
@@ -2029,13 +2425,8 @@ main {
 }
 
 .child-card-clickable {
-  cursor: pointer;
   flex: 1;
   min-width: 0;
-}
-
-.child-card-clickable:hover h3 {
-  color: var(--info);
 }
 
 .child-card-actions {
@@ -2092,4 +2483,561 @@ main {
   padding: 2.5rem 1rem;
   font-size: 0.95rem;
   line-height: 1.6;
+}
+
+/* ================================================================
+   POSTEPY ZAWODNIKA
+   Karty wpisow rozwojowych, selektor okresu.
+   ================================================================ */
+
+/* Selektor okresu (tydzien / miesiac) */
+.period-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.period-option {
+  flex: 1;
+  padding: 0.7rem;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-family: inherit;
+}
+
+.period-option:hover {
+  border-color: #cbd5e1;
+}
+
+.period-option.selected {
+  border-color: var(--primary);
+  background: #f0fdf4;
+  color: var(--primary);
+}
+
+/* Lista wpisow postepow */
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.progress-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+.progress-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.progress-period-badge {
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.progress-period-badge.week {
+  background: var(--info-bg);
+  color: var(--info);
+}
+
+.progress-period-badge.month {
+  background: #faf5ff;
+  color: #7c3aed;
+}
+
+.progress-card-date {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.progress-card-description {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ================================================================
+   TRAINER STATUS SUMMARY
+   Pasek podsumowania statusu na widoku zawodnika (trener).
+   ================================================================ */
+.trainer-status-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.trainer-status-summary.success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.trainer-status-summary.warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
+
+.trainer-status-summary.default {
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.trainer-status-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   CHILD CARD STATS (GroupView – lista zawodnikow)
+   Dwa liczniki obok siebie: raporty + postepy.
+   ================================================================ */
+.child-card-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.child-card-progress-count {
+  color: var(--text-muted) !important;
+  font-size: 0.75rem !important;
+}
+
+/* ================================================================
+   KALENDARZ TRENINGÓW
+   Ikona, siatka kalendarza, modale, lista wydarzeń.
+   ================================================================ */
+
+/* --- Header z ikoną kalendarza --- */
+.cal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cal-icon-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--dark);
+  cursor: pointer;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.cal-icon-btn:hover {
+  background: var(--info-bg);
+  border-color: var(--info);
+  color: var(--info);
+  transform: scale(1.05);
+}
+
+.cal-icon-btn:active {
+  transform: scale(0.97);
+}
+
+/* --- Page header --- */
+.cal-page-header {
+  margin-bottom: 1rem;
+}
+
+.cal-page-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* --- Calendar widget --- */
+.cal-widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.cal-nav-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cal-nav-btn:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.cal-month-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  user-select: none;
+}
+
+/* --- Weekday headers --- */
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.2rem;
+}
+
+.cal-weekday {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0;
+  user-select: none;
+}
+
+/* --- Day grid --- */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  justify-items: center;
+}
+
+/* --- Bazowy styl dnia --- */
+.cal-day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: none;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.cal-day:hover {
+  background: rgba(0, 0, 0, 0.04);
+  transform: scale(1.08);
+}
+
+.cal-day:active {
+  transform: scale(0.95);
+}
+
+/* Dzien z poza biezacego miesiaca */
+.cal-day--outside {
+  color: var(--text-muted);
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cal-day--outside:hover {
+  background: none;
+  transform: none;
+}
+
+/* --- Dzien z wydarzeniem (przeszly/przyszly) – granatowe kolko outline --- */
+.cal-day--has-events {
+  border-color: var(--dark);
+  font-weight: 500;
+}
+
+.cal-day--has-events:hover {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+/* --- Dzisiejszy dzien BEZ wydarzenia --- */
+.cal-day--today {
+  color: var(--primary);
+  font-weight: 700;
+  border-color: var(--border);
+}
+
+.cal-day--today .cal-day-number {
+  color: var(--primary);
+}
+
+/* --- Dzisiejszy dzien Z wydarzeniem – zielone wypelnione kolko --- */
+.cal-day--today.cal-day--has-events {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.cal-day--today.cal-day--has-events .cal-day-number {
+  color: white;
+}
+
+.cal-day--today.cal-day--has-events:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* --- Numer dnia --- */
+.cal-day-number {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* --- Month events list --- */
+.cal-month-events {
+  margin-top: 0.5rem;
+}
+
+.cal-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cal-event-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  transition: all 0.15s;
+}
+
+.cal-event-card.clickable {
+  cursor: pointer;
+}
+
+.cal-event-card.clickable:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-color: var(--dark);
+}
+
+.cal-event-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+}
+
+.cal-event-day {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1.2;
+}
+
+.cal-event-weekday {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.cal-event-card-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.cal-event-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cal-event-info {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* --- Modal overrides for calendar --- */
+.cal-form-modal,
+.cal-detail-modal {
+  max-width: 440px;
+  width: 100%;
+}
+
+.cal-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.cal-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+
+.cal-modal-close:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.cal-modal-date {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+/* Detail list (multiple events in a day) */
+.cal-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.cal-detail-item {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  transition: all 0.15s;
+}
+
+.cal-detail-item.clickable {
+  cursor: pointer;
+}
+
+.cal-detail-item.clickable:hover {
+  background: var(--border);
+}
+
+.cal-detail-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.cal-detail-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* Delete event button (red, bottom of modal) */
+.btn-delete-event {
+  width: 100%;
+  padding: 0.7rem;
+  background: none;
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.btn-delete-event:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+}
+
+/* --- Time input styling --- */
+.form-group input[type="time"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.form-group input[type="time"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+/* --- Mobile adjustments --- */
+@media (max-width: 600px) {
+  .cal-day {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cal-day-number {
+    font-size: 0.82rem;
+  }
+
+  .cal-form-modal,
+  .cal-detail-modal {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .cal-nav-btn {
+    width: 44px;
+    height: 44px;
+  }
 }

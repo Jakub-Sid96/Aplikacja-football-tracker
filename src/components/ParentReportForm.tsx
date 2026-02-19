@@ -50,7 +50,7 @@ const ParentReportForm: React.FC = () => {
     return <div className="container"><p>Brak dostępu.</p></div>;
   }
   if (!session) {
-    return <div className="container"><p>Nie znaleziono raportu postępów.</p></div>;
+    return <div className="container"><p>Nie znaleziono raportu meczowego/treningowego.</p></div>;
   }
 
   const isSubmitted = existingReport?.status === 'submitted';

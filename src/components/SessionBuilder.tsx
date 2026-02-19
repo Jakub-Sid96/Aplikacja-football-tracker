@@ -6,11 +6,11 @@ import { Category } from '../types';
 import DatePickerField from './ui/DatePicker';
 
 // ============================================================
-// SessionBuilder – trener tworzy raport postępów.
+// SessionBuilder – trener tworzy raport meczowy/treningowy.
 //
 // Kluczowa zmiana: groupId pochodzi z URL (kontekst grupy).
 // Trener NIE wybiera grupy – jest ona ustalona przez to,
-// z jakiej grupy kliknął "+ Nowy raport postępów".
+// z jakiej grupy kliknął "+ Nowy raport meczowy/treningowy".
 // ============================================================
 
 const SessionBuilder: React.FC = () => {
@@ -61,7 +61,7 @@ const SessionBuilder: React.FC = () => {
       date,
       categories,
       trainerId: currentUser.id,
-      groupId,  // Raport postępów należy do grupy
+      groupId,  // Raport meczowy/treningowy należy do grupy
     });
 
     navigate(backUrl);
@@ -75,7 +75,7 @@ const SessionBuilder: React.FC = () => {
         ← Powrót do {group.name}
       </button>
 
-      <h2>Nowy raport postępów</h2>
+      <h2>Nowy raport meczowy/treningowy</h2>
       <p className="section-subtitle">
         Grupa: <strong>{group.name}</strong> – kategorie, które rodzic wypełni po treningu lub meczu.
       </p>
@@ -154,7 +154,7 @@ const SessionBuilder: React.FC = () => {
           <div className="form-group">
             <label>Podgląd formularza rodzica</label>
             <div className="session-preview">
-              <div className="preview-title">{title || 'Tytuł raportu postępów'}</div>
+              <div className="preview-title">{title || 'Tytuł raportu meczowego/treningowego'}</div>
               {categories.map(cat => (
                 <div key={cat.id} className="preview-field">
                   <span className="preview-field-name">{cat.name}</span>
@@ -174,7 +174,7 @@ const SessionBuilder: React.FC = () => {
         )}
 
         <button type="submit" className="btn-primary" disabled={!canSubmit}>
-          Zapisz raport postępów
+          Zapisz raport meczowy/treningowy
         </button>
 
         {!canSubmit && (

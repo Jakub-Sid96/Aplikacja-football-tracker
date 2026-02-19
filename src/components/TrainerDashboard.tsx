@@ -4,6 +4,7 @@ import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
 import EditModal from './EditModal';
 import ConfirmModal from './ConfirmModal';
+import { pluralZawodnik } from '../plurals';
 
 // ============================================================
 // TrainerDashboard – główny widok trenera po zalogowaniu.
@@ -110,7 +111,7 @@ const TrainerDashboard: React.FC = () => {
                       <h3>{group.name}</h3>
                       <div className="group-card-header-right">
                         <span className="group-card-count">
-                          {groupChildren.length} zawodników
+                          {groupChildren.length} {pluralZawodnik(groupChildren.length)}
                         </span>
                         <button
                           className="btn-icon-edit"
@@ -270,7 +271,7 @@ const TrainerDashboard: React.FC = () => {
         return (
           <ConfirmModal
             title="Usuń grupę"
-            message={`Czy na pewno chcesz usunąć grupę „${groupToDelete?.name || ''}"? Wszystkie raporty postępów w tej grupie zostaną usunięte. Tej operacji nie można cofnąć.`}
+            message={`Czy na pewno chcesz usunąć grupę „${groupToDelete?.name || ''}"? Wszystkie raporty meczowe/treningowe w tej grupie zostaną usunięte. Tej operacji nie można cofnąć.`}
             confirmLabel="Usuń grupę"
             danger
             onConfirm={() => {

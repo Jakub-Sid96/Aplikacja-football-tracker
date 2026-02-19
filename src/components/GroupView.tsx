@@ -4,16 +4,17 @@ import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
 import ConfirmModal from './ConfirmModal';
 import EditModal from './EditModal';
+import { pluralZawodnik, pluralRaport, pluralKategoria, pluralPostep } from '../plurals';
 
 // ============================================================
 // GroupView – widok konkretnej grupy treningowej.
 //
 // Dwa taby:
-// 1. Raporty postępów – lista raportów postępów tej grupy
+// 1. Raporty meczowe/treningowe – lista raportów tej grupy
 // 2. Zawodnicy – lista dzieci przypisanych do grupy
 //
 // Trener zawsze pracuje w kontekście grupy.
-// Raporty postępów tworzone tutaj automatycznie należą do tej grupy.
+// Raporty meczowe/treningowe tworzone tutaj automatycznie należą do tej grupy.
 // Kliknięcie w zawodnika → notatnik tego zawodnika (per grupa).
 // ============================================================
 
@@ -29,13 +30,14 @@ const GroupView: React.FC = () => {
     getSubmittedReportsForSession,
     getChildrenForGroup,
     getSubmittedReportsForChild,
+    getProgressEntriesForChild,
     deleteSession,
     updateSessionTitle,
     removeChildFromGroup,
     moveChildToGroup,
   } = useApp();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>('sessions');
+  const [tab, setTab] = useState<Tab>('children');
 
   // Modals
   const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null);
@@ -72,40 +74,55 @@ const GroupView: React.FC = () => {
         ← Powrót do grup
       </button>
 
-      <div className="form-header">
-        <h2>{group.name}</h2>
-        <p className="child-badge">
-          {groupChildren.length} zawodników · {sessions.length} raportów postępów
-        </p>
+      <div className="form-header cal-header-row">
+        <div>
+          <h2>{group.name}</h2>
+          <p className="child-badge">
+            {groupChildren.length} {pluralZawodnik(groupChildren.length)} · {sessions.length} {pluralRaport(sessions.length)}
+          </p>
+        </div>
+        <button
+          className="cal-icon-btn"
+          onClick={() => navigate(`/trainer/group/${groupId}/calendar`)}
+          title="Kalendarz treningów"
+          type="button"
+        >
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </button>
       </div>
 
       <div className="dashboard-tabs">
-        <button
-          className={`tab-btn ${tab === 'sessions' ? 'active' : ''}`}
-          onClick={() => setTab('sessions')}
-        >
-          Raporty postępów
-        </button>
         <button
           className={`tab-btn ${tab === 'children' ? 'active' : ''}`}
           onClick={() => setTab('children')}
         >
           Zawodnicy
         </button>
+        <button
+          className={`tab-btn ${tab === 'sessions' ? 'active' : ''}`}
+          onClick={() => setTab('sessions')}
+        >
+          Raporty meczowe/treningowe
+        </button>
       </div>
 
-      {/* === TAB: RAPORTY POSTĘPÓW === */}
+      {/* === TAB: RAPORTY MECZOWE/TRENINGOWE === */}
       {tab === 'sessions' && (
         <>
           <button
             className="btn-primary"
             onClick={() => navigate(`/trainer/group/${groupId}/new-session`)}
           >
-            + Nowy raport postępów
+            + Nowy raport meczowy/treningowy
           </button>
 
           {sessions.length === 0 ? (
-            <p className="empty-state">Nie utworzono jeszcze żadnego raportu postępów w tej grupie.</p>
+            <p className="empty-state">Nie utworzono jeszcze żadnego raportu meczowego/treningowego w tej grupie.</p>
           ) : (
             <div className="sessions-list">
               {sessions.map(session => {
@@ -141,9 +158,9 @@ const GroupView: React.FC = () => {
                       </div>
                     </div>
                     <div className="session-card-meta">
-                      <span>{session.categories.length} kategorii</span>
+                      <span>{session.categories.length} {pluralKategoria(session.categories.length)}</span>
                       <span className="meta-dot">·</span>
-                      <span>{reports.length} raportów</span>
+                      <span>{reports.length} {pluralRaport(reports.length)}</span>
                     </div>
                     <div className="session-card-categories">
                       {session.categories.map(cat => (
@@ -171,25 +188,41 @@ const GroupView: React.FC = () => {
             <div className="children-list">
               {groupChildren.map(child => {
                 const reports = getSubmittedReportsForChild(child.id);
+                const progressCount = getProgressEntriesForChild(child.id).length;
+
+                // Sesje widoczne dla tego zawodnika (od daty dołączenia do grupy)
+                const joinedAt = child.joinedGroupAt;
+                const visibleSessions = joinedAt
+                  ? sessions.filter(s => s.date >= joinedAt)
+                  : sessions;
+                const visibleReports = reports.filter(r => visibleSessions.some(s => s.id === r.sessionId));
+                const visibleTotal = visibleSessions.length;
 
                 return (
-                  <div key={child.id} className="child-card">
+                  <div
+                    key={child.id}
+                    className="child-card clickable"
+                    onClick={() => navigate(`/trainer/group/${groupId}/child/${child.id}`)}
+                  >
                     <div className="child-card-info">
-                      <div
-                        className="child-card-clickable"
-                        onClick={() => navigate(`/trainer/group/${groupId}/child/${child.id}`)}
-                      >
+                      <div>
                         <h3>{child.name}</h3>
                       </div>
-                      <span className={`child-card-meta ${reports.length === sessions.length ? 'reports-complete' : 'reports-pending'}`}>
-                        {reports.length}/{sessions.length} raportów
-                      </span>
+                      <div className="child-card-stats">
+                        <span className={`child-card-meta ${visibleReports.length === visibleTotal ? 'reports-complete' : 'reports-pending'}`}>
+                          {visibleReports.length}/{visibleTotal} {pluralRaport(visibleTotal)}
+                        </span>
+                        <span className="child-card-meta child-card-progress-count">
+                          {progressCount} {pluralPostep(progressCount)}
+                        </span>
+                      </div>
                     </div>
                     <div className="child-card-actions">
                       {otherGroups.length > 0 && (
                         <button
                           className="btn-action-move"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setMoveChildId(child.id);
                             setMoveTargetGroupId(otherGroups[0].id);
                           }}
@@ -199,7 +232,7 @@ const GroupView: React.FC = () => {
                       )}
                       <button
                         className="btn-action-danger"
-                        onClick={() => setRemoveChildId(child.id)}
+                        onClick={(e) => { e.stopPropagation(); setRemoveChildId(child.id); }}
                       >
                         Usuń z grupy
                       </button>
@@ -212,10 +245,10 @@ const GroupView: React.FC = () => {
         </>
       )}
 
-      {/* === MODAL: Usuń raport postępów === */}
+      {/* === MODAL: Usuń raport meczowy/treningowy === */}
       {sessionToDelete && (
         <ConfirmModal
-          title="Usuń raport postępów"
+          title="Usuń raport meczowy/treningowy"
           message={`Czy na pewno chcesz usunąć raport „${sessionToDelete.title}"? Wszystkie powiązane dane zostaną usunięte. Tej operacji nie można cofnąć.`}
           confirmLabel="Usuń raport"
           danger
@@ -254,7 +287,7 @@ const GroupView: React.FC = () => {
           onCancel={() => setEditSessionId(null)}
         >
           <div className="form-group">
-            <label>Tytuł raportu postępów</label>
+            <label>Tytuł raportu meczowego/treningowego</label>
             <input
               type="text"
               value={editSessionTitle}

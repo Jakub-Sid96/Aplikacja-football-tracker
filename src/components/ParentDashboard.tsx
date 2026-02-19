@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
 import EditModal from './EditModal';
+import DatePickerField from './ui/DatePicker';
+import { pluralPostep } from '../plurals';
 
 // ============================================================
 // ParentDashboard – główny widok rodzica po zalogowaniu.
@@ -29,6 +31,8 @@ const ParentDashboard: React.FC = () => {
     sendJoinRequest,
     getGroupById,
     getPendingSessionsCountForChild,
+    getUnreadSessionCount,
+    getUnreadProgressCount,
   } = useApp();
   const { allUsers } = useAuth();
   const navigate = useNavigate();
@@ -146,13 +150,18 @@ const ParentDashboard: React.FC = () => {
                   const pendingCount = child.groupId
                     ? getPendingSessionsCountForChild(child.id, child.groupId)
                     : 0;
+                  const unreadSessions = child.groupId
+                    ? getUnreadSessionCount(child.id, child.groupId)
+                    : 0;
+                  const unreadProgress = getUnreadProgressCount(child.id);
 
                   return (
-                    <div key={child.id} className="child-card">
-                      <div
-                        className="child-card-info clickable"
-                        onClick={() => navigate(`/parent/sessions/${child.id}`)}
-                      >
+                    <div
+                      key={child.id}
+                      className="child-card clickable"
+                      onClick={() => navigate(`/parent/sessions/${child.id}`)}
+                    >
+                      <div className="child-card-info">
                         <div>
                           <h3>{child.name}</h3>
                           {child.birthDate && (
@@ -166,17 +175,30 @@ const ParentDashboard: React.FC = () => {
                           </div>
                         </div>
                         <div className="child-card-status">
-                          {pendingCount > 0 && (
-                            <span className="pending-sessions-badge">
+                          {unreadSessions > 0 && (
+                            <span className="child-status-dot danger">
+                              {unreadSessions} nowe
+                            </span>
+                          )}
+                          {unreadProgress > 0 && (
+                            <span className="child-status-dot success">
+                              {unreadProgress} {pluralPostep(unreadProgress)}
+                            </span>
+                          )}
+                          {pendingCount > 0 && unreadSessions === 0 && (
+                            <span className="child-status-dot warning">
                               {pendingCount} do wypełnienia
                             </span>
                           )}
-                          <span className="status-badge done">Aktywne</span>
+                          {unreadSessions === 0 && unreadProgress === 0 && pendingCount === 0 && (
+                            <span className="status-badge done">Aktywne</span>
+                          )}
                         </div>
                       </div>
                       <button
                         className="btn-edit-inline"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setEditChildId(child.id);
                           setEditChildName(child.name);
                           setEditChildBirthDate(child.birthDate || '');
@@ -220,7 +242,8 @@ const ParentDashboard: React.FC = () => {
                       </div>
                       <button
                         className="btn-edit-inline"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setEditChildId(child.id);
                           setEditChildName(child.name);
                           setEditChildBirthDate(child.birthDate || '');
@@ -259,15 +282,11 @@ const ParentDashboard: React.FC = () => {
                   autoFocus
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="child-birth">Data urodzenia (opcjonalnie)</label>
-                <input
-                  id="child-birth"
-                  type="date"
-                  value={childBirthDate}
-                  onChange={e => setChildBirthDate(e.target.value)}
-                />
-              </div>
+              <DatePickerField
+                label="Data urodzenia (opcjonalnie)"
+                value={childBirthDate}
+                onChange={setChildBirthDate}
+              />
               <div className="form-actions">
                 <button
                   type="button"
@@ -448,14 +467,11 @@ const ParentDashboard: React.FC = () => {
               autoFocus
             />
           </div>
-          <div className="form-group">
-            <label>Data urodzenia</label>
-            <input
-              type="date"
-              value={editChildBirthDate}
-              onChange={e => setEditChildBirthDate(e.target.value)}
-            />
-          </div>
+          <DatePickerField
+            label="Data urodzenia"
+            value={editChildBirthDate}
+            onChange={setEditChildBirthDate}
+          />
         </EditModal>
       )}
     </div>
