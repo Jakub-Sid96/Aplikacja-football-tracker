@@ -187,6 +187,7 @@ main {
 .header-user-name {
   font-size: 0.8rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .header-user-role {
@@ -208,6 +209,12 @@ main {
   left: 5px;
 }
 
+@media (max-width: 400px) {
+  .header-user-name {
+    display: none;
+  }
+}
+
 /* Neon Button */
 .btn-neon {
   position: relative;
@@ -220,7 +227,9 @@ main {
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .btn-neon:hover {
@@ -266,66 +275,274 @@ main {
 
 /* ================================================================
    AUTH PAGES (Login / Register)
-   Minimalistyczne, jeden cel na ekran.
+   Jednolite ciemnogranatowe tło, białe elementy, sportowa czcionka.
+   Bez białej karty – wszystko bezpośrednio na ciemnym tle.
    ================================================================ */
-.auth-page {
-  padding-top: 2.5rem;
+
+/* Fullscreen ciemnogranatowe tło */
+.auth-fullscreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #1e3a5f 0%, #162d47 100%);
+  padding: 2.5rem 1.25rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Kontener – BEZ białej karty, przezroczysty */
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  animation: authFadeIn 0.5s ease;
+}
+
+@keyframes authFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header z tytułem */
+.auth-header {
   text-align: center;
+  margin-bottom: 2.5rem;
+  width: 100%;
 }
 
+/* Sportowa czcionka – Bebas Neue, BIAŁY */
 .auth-logo {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--dark);
-  margin-bottom: 0.25rem;
-  letter-spacing: -0.02em;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 400;
+  letter-spacing: 4px;
+  color: #ffffff;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  line-height: 1.1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Podtytuł – BIAŁY */
 .auth-subtitle {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  font-weight: 400;
 }
 
+/* Tytuł formularza – BIAŁY */
 .auth-title {
-  font-size: 1.15rem;
-  color: var(--text);
+  font-size: 1.2rem;
+  color: #ffffff;
   margin-bottom: 1.5rem;
   font-weight: 600;
+  text-align: center;
+  width: 100%;
 }
 
+/* Błąd – kontrastowy na ciemnym tle */
 .auth-error {
-  background: var(--danger-bg);
-  color: var(--danger);
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
   padding: 0.6rem 1rem;
   border-radius: var(--radius);
   margin-bottom: 1rem;
   font-size: 0.9rem;
   font-weight: 500;
-  border: 1px solid var(--danger-border);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  width: 100%;
 }
 
-.auth-page .form-group {
+.auth-form {
+  width: 100%;
+}
+
+/* Labele – BIAŁE (role-selector itp.) */
+.auth-form .form-group,
+.auth-container > .form-group {
   text-align: left;
 }
 
+.auth-form .form-group label,
+.auth-container > .form-group > label {
+  color: #ffffff;
+}
+
+/* === FLOATING LABEL INPUTS (auth pages) === */
+.floating-group {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.floating-input {
+  width: 100%;
+  padding: 1.1rem 0.85rem 0.55rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1a1a1a;
+  background: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.floating-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.floating-label {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #9ca3af;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: transparent;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+
+/* Label floats up when input is focused or has content */
+.floating-input:focus + .floating-label,
+.floating-input:not(:placeholder-shown) + .floating-label {
+  top: 2px;
+  transform: translateY(0);
+  font-size: 0.75rem;
+  color: #3b82f6;
+  background: transparent;
+  padding: 0 0.3rem;
+}
+
+/* Przycisk – neon pill (identyczny styl jak "Wyloguj" w headerze) */
+.btn-auth {
+  position: relative;
+  width: 100%;
+  padding: 0.85rem 1.4rem;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  min-height: 48px;
+  white-space: nowrap;
+}
+
+.btn-auth:hover {
+  background: rgba(59, 130, 246, 0);
+  color: #ffffff;
+}
+
+.btn-auth:active {
+  transform: scale(0.98);
+}
+
+/* Neon glow na btn-auth – reuse istniejących klas */
+.btn-auth .neon-glow-top,
+.btn-auth .neon-glow-bottom {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #3b82f6, transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.btn-auth .neon-glow-top {
+  top: 0;
+}
+
+.btn-auth .neon-glow-bottom {
+  bottom: -1px;
+  opacity: 0.3;
+}
+
+.btn-auth:hover .neon-glow-top {
+  opacity: 1;
+}
+
+.btn-auth:hover .neon-glow-bottom {
+  opacity: 0.3;
+}
+
+/* Link rejestracji – BIAŁY */
 .auth-switch {
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
 }
 
 .auth-switch a {
-  color: var(--primary);
-  text-decoration: none;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: underline;
   font-weight: 600;
 }
 
 .auth-switch a:hover {
-  text-decoration: underline;
+  color: #ffffff;
 }
 
-/* Wybór roli – dwa duże klikalne bloki */
+/* Logo na dole – białe, przygaszone */
+.auth-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.auth-footer-logo {
+  width: 360px;
+  height: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.12;
+  transition: opacity 0.3s ease;
+}
+
+.auth-footer-logo:hover {
+  opacity: 0.22;
+}
+
+/* Responsywność */
+@media (max-width: 480px) {
+  .auth-fullscreen {
+    padding: 1.25rem 1rem;
+  }
+
+  .auth-logo {
+    font-size: 2.6rem;
+    letter-spacing: 3px;
+  }
+
+  .auth-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .auth-footer-logo {
+    width: 280px;
+  }
+}
+
+/* Wybór roli – dwa klikalne bloki (ciemne tło) */
 .role-selector {
   display: flex;
   gap: 0.75rem;
@@ -335,8 +552,8 @@ main {
 .role-option {
   flex: 1;
   padding: 1rem 0.75rem;
-  background: var(--surface);
-  border: 2px solid var(--border);
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius);
   cursor: pointer;
   transition: all 0.15s;
@@ -348,12 +565,13 @@ main {
 }
 
 .role-option:hover {
-  border-color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .role-option.selected {
-  border-color: var(--primary);
-  background: #f0fdf4;
+  border-color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
 }
 
 .role-option-icon {
@@ -364,12 +582,12 @@ main {
 .role-option-label {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--dark);
+  color: #ffffff;
 }
 
 .role-option-desc {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1.3;
 }
 
@@ -505,7 +723,8 @@ main {
 }
 
 .form-group label {
-  display: block;
+  display: flex;
+  align-items: center;
   font-weight: 600;
   margin-bottom: 0.4rem;
   font-size: 0.9rem;
@@ -519,22 +738,46 @@ main {
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 0.75rem;
-  border: 1.5px solid var(--border);
+  margin-top: 0.5rem;
+  padding: 0.85rem 2.25rem 0.85rem 0.85rem;
+  border: 2px solid var(--border);
   border-radius: var(--radius);
   font-size: 1rem;
   font-family: inherit;
-  transition: border-color 0.15s;
+  transition: all 0.15s;
   background: var(--surface);
   color: var(--text);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 5.646a.5.5 0 0 1 .708 0L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+.form-group select:hover {
+  border-color: var(--info);
+  background-color: var(--bg);
+}
+
+.form-group select option {
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.5rem;
 }
 
 .form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
+.form-group textarea:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--info);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .form-group textarea {
@@ -547,6 +790,30 @@ main {
   color: var(--text-muted);
   font-size: 0.85rem;
   margin-top: 0.5rem;
+}
+
+.input-suggestions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.input-suggestion-chip {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.input-suggestion-chip:hover {
+  border-color: var(--info);
+  color: var(--info);
+  background: rgba(37, 99, 235, 0.06);
 }
 
 .inline-form {
@@ -826,7 +1093,7 @@ main {
 
 .group-card.clickable:active {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .group-card-header {
@@ -1322,7 +1589,7 @@ main {
 
 .session-card.clickable:active {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Wysłany raport – subtelnie wyszarzona */
@@ -1451,7 +1718,7 @@ main {
 
 .child-card.clickable:active {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .child-card.clickable:hover h3 {
@@ -1658,7 +1925,9 @@ main {
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   text-align: left;
   line-height: 1.5;
 }
@@ -1709,8 +1978,14 @@ main {
 }
 
 @keyframes dp-fade-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Handle bar — only visible on mobile */
@@ -1747,7 +2022,9 @@ main {
   color: var(--text);
   cursor: pointer;
   padding: 0.25rem 1.25rem 0.25rem 0.4rem;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.3rem center;
@@ -1781,7 +2058,9 @@ main {
   background: none;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .dp-nav:hover {
@@ -1831,7 +2110,9 @@ main {
   font-family: inherit;
   color: var(--text);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1855,7 +2136,7 @@ main {
 }
 
 .dp-day--today::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 3px;
   left: 50%;
@@ -1919,8 +2200,12 @@ main {
   }
 
   @keyframes dp-backdrop-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .dp-panel {
@@ -1941,8 +2226,12 @@ main {
   }
 
   @keyframes dp-slide-up {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(0); }
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
 
   .dp-handle-bar {
@@ -2014,7 +2303,9 @@ main {
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   text-align: left;
   line-height: 1.5;
 }
@@ -2064,8 +2355,14 @@ main {
 }
 
 @keyframes tp-fade-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tp-handle-bar {
@@ -2132,7 +2429,9 @@ main {
   font-family: inherit;
   color: var(--text);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -2167,8 +2466,12 @@ main {
   }
 
   @keyframes tp-backdrop-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .tp-panel {
@@ -2188,8 +2491,12 @@ main {
   }
 
   @keyframes tp-slide-up {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(0); }
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
 
   .tp-handle-bar {
@@ -2232,8 +2539,12 @@ main {
 }
 
 @keyframes confirm-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .confirm-modal {
@@ -2247,8 +2558,52 @@ main {
 }
 
 @keyframes confirm-scale-in {
-  from { transform: scale(0.95); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.radio-option:hover {
+  border-color: var(--info);
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.radio-option.selected {
+  border-color: var(--primary);
+  background: rgba(22, 163, 74, 0.06);
+}
+
+.radio-option input[type="radio"] {
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .confirm-title {
@@ -2288,20 +2643,20 @@ main {
 }
 
 .confirm-btn--danger {
-  background: var(--info);
+  background: #f44336;
   color: white;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.3);
 }
 
 .confirm-btn--danger:hover {
-  background: #1d4ed8;
+  background: #d32f2f;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
 }
 
 .confirm-btn--danger:active {
   transform: translateY(0);
-  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 1px 3px rgba(244, 67, 54, 0.3);
 }
 
 .confirm-btn--primary {
@@ -2439,9 +2794,9 @@ main {
 
 .btn-action-danger {
   padding: 0.4rem 0.75rem;
-  background: none;
-  color: var(--danger);
-  border: 1px solid var(--danger-border);
+  background: var(--danger);
+  color: white;
+  border: none;
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 600;
@@ -2451,15 +2806,14 @@ main {
 }
 
 .btn-action-danger:hover {
-  background: var(--danger-bg);
-  border-color: var(--danger);
+  background: #b91c1c;
 }
 
 .btn-action-move {
   padding: 0.4rem 0.75rem;
-  background: none;
-  color: var(--info);
-  border: 1px solid var(--info-border);
+  background: var(--info);
+  color: white;
+  border: none;
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 600;
@@ -2469,8 +2823,7 @@ main {
 }
 
 .btn-action-move:hover {
-  background: var(--info-bg);
-  border-color: var(--info);
+  background: #1d4ed8;
 }
 
 /* ================================================================
@@ -2709,7 +3062,9 @@ main {
   color: var(--text-secondary);
   font-size: 1.3rem;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .cal-nav-btn:hover {
@@ -2860,9 +3215,20 @@ main {
   cursor: pointer;
 }
 
-.cal-event-card.clickable:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border-color: var(--dark);
+.cal-event-card.clickable:hover,
+.cal-event-card.clickable-parent:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+}
+
+.cal-event-card.clickable:active,
+.cal-event-card.clickable-parent:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cal-event-card.clickable-parent {
+  cursor: pointer;
 }
 
 .cal-event-card-left {
@@ -2983,9 +3349,9 @@ main {
 .btn-delete-event {
   width: 100%;
   padding: 0.7rem;
-  background: none;
-  color: var(--danger);
-  border: 1px solid var(--danger-border);
+  background: var(--danger);
+  color: white;
+  border: none;
   border-radius: var(--radius);
   font-size: 0.88rem;
   font-weight: 600;
@@ -2996,8 +3362,7 @@ main {
 }
 
 .btn-delete-event:hover {
-  background: var(--danger-bg);
-  border-color: var(--danger);
+  background: #b91c1c;
 }
 
 /* --- Time input styling --- */
@@ -3039,5 +3404,334 @@ main {
   .cal-nav-btn {
     width: 44px;
     height: 44px;
+  }
+}
+
+/* ================================================================
+   ATTENDANCE – system obecnosci
+   ================================================================ */
+
+/* --- Calendar day attendance indicators (parent view) --- */
+.cal-day--present {
+  border-color: #4caf50 !important;
+  position: relative;
+}
+
+.cal-day--present::after {
+  display: none;
+}
+
+.cal-day--absent {
+  border-color: #f44336 !important;
+  position: relative;
+}
+
+.cal-day--absent .cal-day-number {
+  color: #f44336;
+}
+
+.cal-day--absent::after {
+  display: none;
+}
+
+/* Override today + attendance combos */
+.cal-day--today.cal-day--present {
+  background: transparent;
+  border-color: #4caf50 !important;
+}
+.cal-day--today.cal-day--present .cal-day-number {
+  color: #4caf50;
+}
+
+.cal-day--today.cal-day--absent {
+  background: transparent;
+  border-color: #f44336 !important;
+}
+.cal-day--today.cal-day--absent .cal-day-number {
+  color: #f44336;
+}
+
+/* --- Attendance Modal --- */
+.attendance-modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.attendance-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.attendance-modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.attendance-event-info {
+  padding: 0.85rem 1.5rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.attendance-event-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem 0;
+  color: var(--text);
+}
+
+.attendance-event-details {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* --- Attendance list --- */
+.attendance-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem 1.5rem;
+}
+
+.attendance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.attendance-row:last-child {
+  border-bottom: none;
+}
+
+.attendance-player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.attendance-player-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* --- Attendance toggle buttons --- */
+.attendance-buttons {
+  display: flex;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.btn-attendance {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: inherit;
+}
+
+.att-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.btn-attendance.btn-present:hover {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.btn-attendance.btn-present.active {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: #ffffff;
+}
+
+.btn-attendance.btn-absent:hover {
+  background: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+.btn-attendance.btn-absent.active {
+  background: #f44336;
+  border-color: #f44336;
+  color: #ffffff;
+}
+
+/* --- Attendance modal footer --- */
+.attendance-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.attendance-count {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-right: auto;
+}
+
+.attendance-footer-buttons {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* --- Open attendance button (trainer) --- */
+.btn-attendance-open {
+  padding: 0.4rem 0.85rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--info);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-attendance-open:hover {
+  background: #1d4ed8;
+}
+
+.btn-attendance-open--small {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* --- Attendance badges (detail modal) --- */
+.att-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.att-badge--present {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.att-badge--absent {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.att-badge--pending {
+  background: var(--bg);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* --- Detail item wrapper with attendance --- */
+.cal-detail-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+}
+
+.cal-detail-item-wrapper .cal-detail-item {
+  background: transparent;
+  padding: 0;
+}
+
+.cal-detail-attendance {
+  padding-top: 0.35rem;
+}
+
+/* --- Inline attendance badge in event list --- */
+.att-badge-inline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.att-badge-inline--present {
+  color: #2e7d32;
+}
+
+.att-badge-inline--absent {
+  color: #c62828;
+}
+
+/* --- Event card attendance accent (parent) --- */
+.cal-event-card--present {
+  border-left: 3px solid #4caf50;
+}
+
+.cal-event-card--absent {
+  border-left: 3px solid #f44336;
+}
+
+/* --- Form bottom actions (edit modal) --- */
+.cal-form-bottom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .attendance-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .attendance-modal-header,
+  .attendance-event-info,
+  .attendance-list,
+  .attendance-modal-footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .attendance-buttons {
+    gap: 0.4rem;
+  }
+
+  .btn-attendance {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  .btn-attendance span:not(.att-icon) {
+    display: none;
   }
 }

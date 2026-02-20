@@ -98,6 +98,16 @@ export interface CalendarEvent {
   updatedAt: string;
 }
 
+// Obecność zawodnika na wydarzeniu.
+export interface EventAttendance {
+  id: string;
+  eventId: string;
+  childId: string;
+  status: 'PRESENT' | 'ABSENT';
+  markedBy: string; // trainerId
+  markedAt: string; // ISO timestamp
+}
+
 // Powiadomienie.
 export interface Notification {
   id: string;

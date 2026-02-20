@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Child, Group, JoinRequest, Session, Report, Notification, ProgressEntry, CalendarEvent } from './types';
+import { Child, Group, JoinRequest, Session, Report, Notification, ProgressEntry, CalendarEvent, EventAttendance } from './types';
 import { useAuth } from './AuthContext';
 
 // ============================================================
@@ -20,6 +20,7 @@ const JOIN_REQUESTS_KEY = 'ft-join-requests';
 const NOTIFICATIONS_KEY = 'ft-notifications';
 const PROGRESS_KEY = 'ft-progress';
 const CALENDAR_KEY = 'ft-calendar-events';
+const ATTENDANCE_KEY = 'ft-attendance';
 const READ_SESSIONS_KEY = 'ft-read-sessions';
 const READ_PROGRESS_KEY = 'ft-read-progress';
 
@@ -108,6 +109,12 @@ interface AppState {
   deleteCalendarEvent: (eventId: string) => void;
   getCalendarEventsForGroup: (groupId: string) => CalendarEvent[];
 
+  // Obecność
+  attendance: EventAttendance[];
+  saveAttendance: (eventId: string, records: Record<string, 'PRESENT' | 'ABSENT' | null>, trainerId: string) => void;
+  getAttendanceForEvent: (eventId: string) => Record<string, 'PRESENT' | 'ABSENT'>;
+  getAttendanceForChild: (childId: string) => EventAttendance[];
+
   // Wyszukiwanie trenerów
   searchTrainers: (query: string) => { id: string; name: string; groups: Group[] }[];
 }
@@ -125,6 +132,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   const [notifications, setNotifications] = useState<Notification[]>(() => loadFromStorage(NOTIFICATIONS_KEY, []));
   const [progressEntries, setProgressEntries] = useState<ProgressEntry[]>(() => loadFromStorage(PROGRESS_KEY, []));
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(() => loadFromStorage(CALENDAR_KEY, []));
+  const [attendance, setAttendance] = useState<EventAttendance[]>(() => loadFromStorage(ATTENDANCE_KEY, []));
   // Śledzenie odczytów: Record<childId, string[]> — lista ID sesji/postępów odczytanych
   const [readSessions, setReadSessions] = useState<Record<string, string[]>>(() => loadFromStorage(READ_SESSIONS_KEY, {}));
   const [readProgress, setReadProgress] = useState<Record<string, string[]>>(() => loadFromStorage(READ_PROGRESS_KEY, {}));
@@ -138,6 +146,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
   useEffect(() => { localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications)); }, [notifications]);
   useEffect(() => { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressEntries)); }, [progressEntries]);
   useEffect(() => { localStorage.setItem(CALENDAR_KEY, JSON.stringify(calendarEvents)); }, [calendarEvents]);
+  useEffect(() => { localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(attendance)); }, [attendance]);
   useEffect(() => { localStorage.setItem(READ_SESSIONS_KEY, JSON.stringify(readSessions)); }, [readSessions]);
   useEffect(() => { localStorage.setItem(READ_PROGRESS_KEY, JSON.stringify(readProgress)); }, [readProgress]);
 
@@ -179,8 +188,12 @@ export function AppProvider({ children: reactChildren }: { children: React.React
       setReports(r => r.filter(rep => !sessionIds.includes(rep.sessionId)));
       return prev.filter(s => s.groupId !== groupId);
     });
-    // Usuwamy wydarzenia kalendarza
-    setCalendarEvents(prev => prev.filter(e => e.groupId !== groupId));
+    // Usuwamy wydarzenia kalendarza i powiązaną obecność
+    setCalendarEvents(prev => {
+      const eventIds = prev.filter(e => e.groupId === groupId).map(e => e.id);
+      setAttendance(a => a.filter(at => !eventIds.includes(at.eventId)));
+      return prev.filter(e => e.groupId !== groupId);
+    });
     // Odpinamy dzieci z grupy
     setChildren(prev => prev.map(c =>
       c.groupId === groupId ? { ...c, groupId: undefined, trainerId: undefined } : c
@@ -480,6 +493,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
 
   const deleteCalendarEvent = useCallback((eventId: string) => {
     setCalendarEvents(prev => prev.filter(e => e.id !== eventId));
+    setAttendance(prev => prev.filter(a => a.eventId !== eventId));
   }, []);
 
   const getCalendarEventsForGroup = useCallback((groupId: string) => {
@@ -491,6 +505,42 @@ export function AppProvider({ children: reactChildren }: { children: React.React
         return a.time.localeCompare(b.time);
       });
   }, [calendarEvents]);
+
+  // === OBECNOŚĆ ===
+
+  const saveAttendance = useCallback((eventId: string, records: Record<string, 'PRESENT' | 'ABSENT' | null>, trainerId: string) => {
+    setAttendance(prev => {
+      // Usuń stare wpisy dla tego wydarzenia
+      const withoutEvent = prev.filter(a => a.eventId !== eventId);
+      // Dodaj nowe wpisy
+      const newEntries: EventAttendance[] = [];
+      for (const [childId, status] of Object.entries(records)) {
+        if (status) {
+          newEntries.push({
+            id: `att-${eventId}-${childId}`,
+            eventId,
+            childId,
+            status,
+            markedBy: trainerId,
+            markedAt: new Date().toISOString(),
+          });
+        }
+      }
+      return [...withoutEvent, ...newEntries];
+    });
+  }, []);
+
+  const getAttendanceForEvent = useCallback((eventId: string): Record<string, 'PRESENT' | 'ABSENT'> => {
+    const map: Record<string, 'PRESENT' | 'ABSENT'> = {};
+    attendance.filter(a => a.eventId === eventId).forEach(a => {
+      map[a.childId] = a.status;
+    });
+    return map;
+  }, [attendance]);
+
+  const getAttendanceForChild = useCallback((childId: string): EventAttendance[] => {
+    return attendance.filter(a => a.childId === childId);
+  }, [attendance]);
 
   // === WYSZUKIWANIE TRENERÓW ===
   const searchTrainers = useCallback((query: string) => {
@@ -523,6 +573,7 @@ export function AppProvider({ children: reactChildren }: { children: React.React
     markSessionsRead, isSessionRead, getUnreadSessionCount,
     markProgressRead, isProgressRead, getUnreadProgressCount,
     addCalendarEvent, updateCalendarEvent, deleteCalendarEvent, getCalendarEventsForGroup,
+    attendance, saveAttendance, getAttendanceForEvent, getAttendanceForChild,
     searchTrainers,
   };
 

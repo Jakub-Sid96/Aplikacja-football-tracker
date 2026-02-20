@@ -224,7 +224,7 @@ const GroupView: React.FC = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setMoveChildId(child.id);
-                            setMoveTargetGroupId(otherGroups[0].id);
+                            setMoveTargetGroupId('');
                           }}
                         >
                           Przenieś do innej grupy
@@ -309,14 +309,20 @@ const GroupView: React.FC = () => {
             </p>
             <div className="form-group" style={{ marginTop: '0.75rem' }}>
               <label>Grupa docelowa</label>
-              <select
-                value={moveTargetGroupId}
-                onChange={e => setMoveTargetGroupId(e.target.value)}
-              >
+              <div className="radio-group">
                 {otherGroups.map(g => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
+                  <label key={g.id} className={`radio-option${moveTargetGroupId === g.id ? ' selected' : ''}`}>
+                    <input
+                      type="radio"
+                      name="moveTarget"
+                      value={g.id}
+                      checked={moveTargetGroupId === g.id}
+                      onChange={e => setMoveTargetGroupId(e.target.value)}
+                    />
+                    {g.name}
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
             <div className="confirm-actions">
               <button className="btn-secondary confirm-cancel" onClick={() => setMoveChildId(null)}>

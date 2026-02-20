@@ -52,16 +52,19 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <div className="auth-page">
-        <div className="auth-logo">Football Tracker</div>
-        <p className="auth-subtitle">Obserwacja rozwoju młodych piłkarzy</p>
+    <div className="auth-fullscreen">
+      <div className="auth-container">
+        <div className="auth-header">
+          <h1 className="auth-logo">Football Tracker</h1>
+          <p className="auth-subtitle">Obserwacja rozwoju młodych piłkarzy</p>
+        </div>
+
         <h2 className="auth-title">Utwórz konto</h2>
 
         {error && <div className="auth-error">{error}</div>}
 
         {/* Krok 1: Wybór roli */}
-        <div className="form-group">
+        <div className="form-group auth-form">
           <label>Kim jesteś?</label>
           <div className="role-selector">
             <button
@@ -87,45 +90,50 @@ const RegisterPage: React.FC = () => {
 
         {/* Krok 2: Dane (widoczne po wyborze roli) */}
         {role && (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="reg-name">Imię i nazwisko</label>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="floating-group">
               <input
                 id="reg-name"
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="Jan Kowalski"
+                placeholder=" "
                 autoComplete="name"
+                className="floating-input"
               />
+              <label htmlFor="reg-name" className="floating-label">Imię i nazwisko</label>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="reg-email">Email</label>
+            <div className="floating-group">
               <input
                 id="reg-email"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="jan@email.pl"
+                placeholder=" "
                 autoComplete="email"
+                className="floating-input"
               />
+              <label htmlFor="reg-email" className="floating-label">Email</label>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="reg-password">Hasło</label>
+            <div className="floating-group">
               <input
                 id="reg-password"
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="Minimum 4 znaki"
+                placeholder=" "
                 autoComplete="new-password"
+                className="floating-input"
               />
+              <label htmlFor="reg-password" className="floating-label">Hasło</label>
             </div>
 
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-auth">
+              <span className="neon-glow-top" />
               Zarejestruj się jako {role === 'parent' ? 'rodzic' : 'trener'}
+              <span className="neon-glow-bottom" />
             </button>
           </form>
         )}
@@ -133,6 +141,10 @@ const RegisterPage: React.FC = () => {
         <p className="auth-switch">
           Masz już konto? <Link to="/login">Zaloguj się</Link>
         </p>
+
+        <div className="auth-footer">
+          <img src="/football.png" alt="Football Tracker Logo" className="auth-footer-logo" />
+        </div>
       </div>
     </div>
   );
