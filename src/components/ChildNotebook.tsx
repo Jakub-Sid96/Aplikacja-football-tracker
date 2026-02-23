@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../AppContext';
 import ReportCard from './ReportCard';
 import { pluralWpis } from '../plurals';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // ChildNotebook – widok zawodnika widziany przez trenera.
@@ -104,9 +105,9 @@ const ChildNotebook: React.FC = () => {
 
   return (
     <div className="container">
-      <button className="btn-back" onClick={() => navigate(backUrl)}>
+      <PremiumButton variant="navy" size="sm" className="pbtn--back" onClick={() => navigate(backUrl)}>
         ← Powrót do {group.name}
-      </button>
+      </PremiumButton>
 
       <div className="notebook-header">
         <h2>{child.name}</h2>
@@ -205,25 +206,23 @@ const ChildNotebook: React.FC = () => {
                 />
               </div>
               <div className="form-actions">
-                <button
+                <PremiumButton
                   type="button"
-                  className="btn-secondary"
+                  variant="navy"
+                  size="sm"
                   onClick={() => { setShowForm(false); setDescription(''); setPeriod('week'); }}
                 >
                   Anuluj
-                </button>
-                <button type="submit" className="btn-primary" disabled={!description.trim()}>
+                </PremiumButton>
+                <PremiumButton variant="blue" size="sm" type="submit" disabled={!description.trim()}>
                   Zapisz postępy
-                </button>
+                </PremiumButton>
               </div>
             </form>
           ) : (
-            <button
-              className="btn-primary"
-              onClick={() => setShowForm(true)}
-            >
+            <PremiumButton variant="blue" className="pbtn--block" onClick={() => setShowForm(true)}>
               + Dodaj postępy
-            </button>
+            </PremiumButton>
           )}
 
           {progressEntries.length === 0 && !showForm ? (

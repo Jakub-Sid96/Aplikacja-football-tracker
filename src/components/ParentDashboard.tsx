@@ -5,6 +5,7 @@ import { useApp } from '../AppContext';
 import EditModal from './EditModal';
 import DatePickerField from './ui/DatePicker';
 import { pluralPostep } from '../plurals';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // ParentDashboard – główny widok rodzica po zalogowaniu.
@@ -195,18 +196,19 @@ const ParentDashboard: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      <button
-                        className="btn-edit-inline"
+                      <PremiumButton
+                        variant="blue"
+                        size="sm"
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>}
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditChildId(child.id);
                           setEditChildName(child.name);
                           setEditChildBirthDate(child.birthDate || '');
                         }}
-                        title="Edytuj dane dziecka"
                       >
-                        ✏️ Edytuj dane
-                      </button>
+                        Edytuj dane
+                      </PremiumButton>
                     </div>
                   );
                 })}
@@ -240,18 +242,19 @@ const ParentDashboard: React.FC = () => {
                           {hasPendingRequest ? 'Oczekuje na akceptację' : 'Brak przypisania'}
                         </span>
                       </div>
-                      <button
-                        className="btn-edit-inline"
+                      <PremiumButton
+                        variant="blue"
+                        size="sm"
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>}
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditChildId(child.id);
                           setEditChildName(child.name);
                           setEditChildBirthDate(child.birthDate || '');
                         }}
-                        title="Edytuj dane dziecka"
                       >
-                        ✏️ Edytuj dane
-                      </button>
+                        Edytuj dane
+                      </PremiumButton>
                     </div>
                   );
                 })}
@@ -288,25 +291,23 @@ const ParentDashboard: React.FC = () => {
                 onChange={setChildBirthDate}
               />
               <div className="form-actions">
-                <button
+                <PremiumButton
                   type="button"
-                  className="btn-secondary"
+                  variant="navy"
+                  size="sm"
                   onClick={() => { setShowAddChild(false); setChildName(''); setChildBirthDate(''); }}
                 >
                   Anuluj
-                </button>
-                <button type="submit" className="btn-primary" disabled={!childName.trim()}>
+                </PremiumButton>
+                <PremiumButton variant="blue" size="sm" type="submit" disabled={!childName.trim()}>
                   Dodaj
-                </button>
+                </PremiumButton>
               </div>
             </form>
           ) : (
-            <button
-              className="btn-primary"
-              onClick={() => setShowAddChild(true)}
-            >
+            <PremiumButton variant="blue" className="pbtn--block" onClick={() => setShowAddChild(true)}>
               + Dodaj dziecko
-            </button>
+            </PremiumButton>
           )}
 
           {/* Wyszukiwanie trenera */}
@@ -339,14 +340,15 @@ const ParentDashboard: React.FC = () => {
                   placeholder="Wpisz imię trenera..."
                   onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
                 />
-                <button
+                <PremiumButton
                   type="button"
-                  className="btn-add-cat"
+                  variant="violet"
+                  size="sm"
                   onClick={handleSearch}
                   disabled={!searchQuery.trim()}
                 >
                   Szukaj
-                </button>
+                </PremiumButton>
               </div>
 
               {/* Wyniki wyszukiwania */}
@@ -375,13 +377,14 @@ const ParentDashboard: React.FC = () => {
                                 {alreadyRequested ? (
                                   <span className="status-badge draft">Wysłano</span>
                                 ) : (
-                                  <button
-                                    className="btn-join"
+                                  <PremiumButton
+                                    variant="emerald"
+                                    size="sm"
                                     onClick={() => handleSendRequest(trainer.id, group.id)}
                                     disabled={!childForJoin}
                                   >
                                     Dołącz
-                                  </button>
+                                  </PremiumButton>
                                 )}
                               </div>
                             );

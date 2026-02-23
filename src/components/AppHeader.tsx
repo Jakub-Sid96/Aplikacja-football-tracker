@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // AppHeader – nagłówek aplikacji po zalogowaniu.
@@ -55,11 +56,9 @@ const AppHeader: React.FC = () => {
               {currentUser.role === 'trainer' ? 'Trener' : 'Rodzic'}
             </span>
           </div>
-          <button className="btn-neon" onClick={handleLogout}>
-            <span className="neon-glow-top" />
+          <PremiumButton variant="rose" size="sm" className="pbtn--hover-white" onClick={handleLogout}>
             Wyloguj
-            <span className="neon-glow-bottom" />
-          </button>
+          </PremiumButton>
         </div>
       </div>
     </header>

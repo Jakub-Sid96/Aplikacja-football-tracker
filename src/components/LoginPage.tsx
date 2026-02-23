@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // LoginPage – prosty formularz logowania.
@@ -76,11 +77,9 @@ const LoginPage: React.FC = () => {
             <label htmlFor="login-password" className="floating-label">Hasło</label>
           </div>
 
-          <button type="submit" className="btn-auth">
-            <span className="neon-glow-top" />
+          <PremiumButton type="submit" variant="blue" size="lg" className="btn-auth-premium pbtn--hover-white">
             Zaloguj się
-            <span className="neon-glow-bottom" />
-          </button>
+          </PremiumButton>
         </form>
 
         <p className="auth-switch">

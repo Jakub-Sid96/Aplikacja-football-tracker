@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
 import { pluralKategoria } from '../plurals';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // ParentSessionList – widok zawodnika widziany przez rodzica.
@@ -47,7 +48,7 @@ const ParentSessionList: React.FC = () => {
   if (!child.groupId) {
     return (
       <div className="container">
-        <button className="btn-back" onClick={() => navigate('/parent')}>← Powrót</button>
+        <PremiumButton variant="navy" size="sm" className="pbtn--back" onClick={() => navigate('/parent')}>← Powrót</PremiumButton>
         <p className="empty-state">
           To dziecko nie jest jeszcze przypisane do zadnej grupy treningowej.
         </p>
@@ -120,7 +121,7 @@ const ParentSessionList: React.FC = () => {
 
   return (
     <div className="container">
-      <button className="btn-back" onClick={() => navigate('/parent')}>← Powrót</button>
+      <PremiumButton variant="navy" size="sm" className="pbtn--back" onClick={() => navigate('/parent')}>← Powrót</PremiumButton>
 
       <div className="form-header cal-header-row">
         <h2>{child.name}</h2>

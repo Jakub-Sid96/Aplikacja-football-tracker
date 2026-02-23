@@ -5,6 +5,7 @@ import { useApp } from '../AppContext';
 import ConfirmModal from './ConfirmModal';
 import EditModal from './EditModal';
 import { pluralZawodnik, pluralRaport, pluralKategoria, pluralPostep } from '../plurals';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // GroupView – widok konkretnej grupy treningowej.
@@ -70,9 +71,9 @@ const GroupView: React.FC = () => {
   const childToMove = moveChildId ? groupChildren.find(c => c.id === moveChildId) : null;
   return (
     <div className="container">
-      <button className="btn-back" onClick={() => navigate('/trainer')}>
+      <PremiumButton variant="navy" size="sm" className="pbtn--back" onClick={() => navigate('/trainer')}>
         ← Powrót do grup
-      </button>
+      </PremiumButton>
 
       <div className="form-header cal-header-row">
         <div>
@@ -114,12 +115,13 @@ const GroupView: React.FC = () => {
       {/* === TAB: RAPORTY MECZOWE/TRENINGOWE === */}
       {tab === 'sessions' && (
         <>
-          <button
-            className="btn-primary"
+          <PremiumButton
+            variant="blue"
+            className="pbtn--block"
             onClick={() => navigate(`/trainer/group/${groupId}/new-session`)}
           >
             + Nowy raport meczowy/treningowy
-          </button>
+          </PremiumButton>
 
           {sessions.length === 0 ? (
             <p className="empty-state">Nie utworzono jeszcze żadnego raportu meczowego/treningowego w tej grupie.</p>
@@ -134,27 +136,35 @@ const GroupView: React.FC = () => {
                     <div className="session-card-header">
                       <div className="session-card-title-row">
                         <h3>{session.title}</h3>
-                        <button
-                          className="btn-icon-edit"
+                        <PremiumButton
+                          variant="blue"
+                          size="sm"
+                          iconOnly
+                          className="pbtn--ghost"
+                          icon={<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>}
                           onClick={() => {
                             setEditSessionId(session.id);
                             setEditSessionTitle(session.title);
                           }}
                           title="Edytuj tytuł"
                         >
-                          ✏️
-                        </button>
+                          Edytuj tytuł
+                        </PremiumButton>
                       </div>
                       <div className="session-card-actions">
                         <span className="session-card-date">{formattedDate}</span>
-                        <button
-                          className="btn-icon-danger"
+                        <PremiumButton
+                          variant="rose"
+                          size="sm"
+                          iconOnly
+                          className="pbtn--ghost"
+                          icon={<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>}
                           onClick={() => setDeleteSessionId(session.id)}
                           aria-label={`Usuń ${session.title}`}
                           title="Usuń raport"
                         >
-                          🗑
-                        </button>
+                          Usuń raport
+                        </PremiumButton>
                       </div>
                     </div>
                     <div className="session-card-meta">
@@ -219,8 +229,9 @@ const GroupView: React.FC = () => {
                     </div>
                     <div className="child-card-actions">
                       {otherGroups.length > 0 && (
-                        <button
-                          className="btn-action-move"
+                        <PremiumButton
+                          variant="blue"
+                          size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             setMoveChildId(child.id);
@@ -228,14 +239,15 @@ const GroupView: React.FC = () => {
                           }}
                         >
                           Przenieś do innej grupy
-                        </button>
+                        </PremiumButton>
                       )}
-                      <button
-                        className="btn-action-danger"
+                      <PremiumButton
+                        variant="rose"
+                        size="sm"
                         onClick={(e) => { e.stopPropagation(); setRemoveChildId(child.id); }}
                       >
                         Usuń z grupy
-                      </button>
+                      </PremiumButton>
                     </div>
                   </div>
                 );
@@ -325,11 +337,12 @@ const GroupView: React.FC = () => {
               </div>
             </div>
             <div className="confirm-actions">
-              <button className="btn-secondary confirm-cancel" onClick={() => setMoveChildId(null)}>
+              <PremiumButton variant="navy" size="sm" onClick={() => setMoveChildId(null)}>
                 Anuluj
-              </button>
-              <button
-                className="confirm-btn confirm-btn--primary"
+              </PremiumButton>
+              <PremiumButton
+                variant="blue"
+                size="sm"
                 disabled={!moveTargetGroupId}
                 onClick={() => {
                   if (moveTargetGroupId) {
@@ -340,7 +353,7 @@ const GroupView: React.FC = () => {
                 }}
               >
                 Przenieś
-              </button>
+              </PremiumButton>
             </div>
           </div>
         </div>

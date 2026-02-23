@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { UserRole } from '../types';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // RegisterPage – rejestracja z wyborem roli.
@@ -130,11 +131,9 @@ const RegisterPage: React.FC = () => {
               <label htmlFor="reg-password" className="floating-label">Hasło</label>
             </div>
 
-            <button type="submit" className="btn-auth">
-              <span className="neon-glow-top" />
+            <PremiumButton type="submit" variant="blue" size="lg" className="btn-auth-premium pbtn--hover-white">
               Zarejestruj się jako {role === 'parent' ? 'rodzic' : 'trener'}
-              <span className="neon-glow-bottom" />
-            </button>
+            </PremiumButton>
           </form>
         )}
 

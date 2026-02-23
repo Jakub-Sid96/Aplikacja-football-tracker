@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CalendarEvent, Child } from '../types';
 import { useApp } from '../AppContext';
 import { useAuth } from '../AuthContext';
+import { PremiumButton } from './ui/PremiumButton';
 
 interface Props {
   event: CalendarEvent;
@@ -83,12 +84,12 @@ const AttendanceModal: React.FC<Props> = ({ event, onClose }) => {
             {markedCount}/{players.length} zaznaczono
           </span>
           <div className="attendance-footer-buttons">
-            <button className="btn-secondary" onClick={onClose} type="button">
+            <PremiumButton variant="navy" size="sm" onClick={onClose} type="button">
               Anuluj
-            </button>
-            <button className="btn-primary" onClick={handleSave} type="button">
+            </PremiumButton>
+            <PremiumButton variant="blue" size="sm" onClick={handleSave} type="button">
               Zapisz
-            </button>
+            </PremiumButton>
           </div>
         </div>
       </div>

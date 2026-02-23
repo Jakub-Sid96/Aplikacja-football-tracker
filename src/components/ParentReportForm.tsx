@@ -4,6 +4,7 @@ import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
 import { Category } from '../types';
 import StatCounter from './StatCounter';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // ParentReportForm – formularz raportu z obsługą draftów.
@@ -134,9 +135,9 @@ const ParentReportForm: React.FC = () => {
 
   return (
     <div className="container">
-      <button className="btn-back" onClick={() => navigate(backUrl)}>
+      <PremiumButton variant="navy" size="sm" className="pbtn--back" onClick={() => navigate(backUrl)}>
         ← Powrót
-      </button>
+      </PremiumButton>
 
       <div className="form-header">
         <h2>{session.title}</h2>
@@ -177,20 +178,22 @@ const ParentReportForm: React.FC = () => {
 
         {!isSubmitted && (
           <div className="form-actions">
-            <button
+            <PremiumButton
               type="button"
-              className="btn-secondary"
+              variant="navy"
+              size="sm"
               onClick={handleSaveDraft}
             >
               Zapisz roboczo
-            </button>
-            <button
+            </PremiumButton>
+            <PremiumButton
+              variant="blue"
+              size="sm"
               type="button"
-              className="btn-primary"
               onClick={handleSubmit}
             >
               Wyślij do trenera
-            </button>
+            </PremiumButton>
           </div>
         )}
       </form>

@@ -6,6 +6,7 @@ import { CalendarEvent } from '../types';
 import ConfirmModal from './ConfirmModal';
 import TimePickerField from './ui/TimePicker';
 import AttendanceModal from './AttendanceModal';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // CalendarPage – kalendarz treningów/meczów dla grupy.
@@ -54,6 +55,7 @@ const CalendarPage: React.FC = () => {
     deleteCalendarEvent,
     getAttendanceForEvent,
     getAttendanceForChild,
+    getChildrenForGroup,
   } = useApp();
   const navigate = useNavigate();
 
@@ -282,9 +284,9 @@ const CalendarPage: React.FC = () => {
 
   return (
     <div className="container">
-      <button className="btn-back" onClick={() => navigate(backUrl)}>
+      <PremiumButton variant="navy" size="sm" className="pbtn--back" onClick={() => navigate(backUrl)}>
         {backLabel}
-      </button>
+      </PremiumButton>
 
       <div className="cal-page-header">
         <h2>Kalendarz — {group.name}</h2>
@@ -325,6 +327,18 @@ const CalendarPage: React.FC = () => {
               }
             }
 
+            // Trainer: check if attendance is fully recorded for all events this day
+            let allChecked = false;
+            if (isTrainer && hasEvents && resolvedGroupId) {
+              const players = getChildrenForGroup(resolvedGroupId);
+              if (players.length > 0) {
+                allChecked = dayEvents.every(ev => {
+                  const att = getAttendanceForEvent(ev.id);
+                  return Object.keys(att).length >= players.length;
+                });
+              }
+            }
+
             return (
               <button
                 key={i}
@@ -335,6 +349,7 @@ const CalendarPage: React.FC = () => {
                   isToday && 'cal-day--today',
                   hasEvents && 'cal-day--has-events',
                   attendanceClass,
+                  allChecked && 'cal-day--all-checked',
                 ].filter(Boolean).join(' ')}
                 onClick={() => handleDayClick(cell.dateKey)}
               >
@@ -385,16 +400,17 @@ const CalendarPage: React.FC = () => {
                     )}
                   </div>
                   {isTrainer && (
-                    <button
+                    <PremiumButton
                       type="button"
-                      className="btn-attendance-open btn-attendance-open--small"
+                      variant="emerald"
+                      size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         setAttendanceEvent(ev);
                       }}
                     >
                       Obecność
-                    </button>
+                    </PremiumButton>
                   )}
                 </div>
               );
@@ -458,9 +474,10 @@ const CalendarPage: React.FC = () => {
 
                     {/* Trainer: attendance button */}
                     {isTrainer && (
-                      <button
+                      <PremiumButton
                         type="button"
-                        className="btn-attendance-open"
+                        variant="emerald"
+                        size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           setDetailDate(null);
@@ -470,21 +487,22 @@ const CalendarPage: React.FC = () => {
                         {trainerAttCount > 0
                           ? `Obecność (${trainerAttCount})`
                           : 'Sprawdź obecność'}
-                      </button>
+                      </PremiumButton>
                     )}
                   </div>
                 );
               })}
             </div>
             {isTrainer && (
-              <button
+              <PremiumButton
+                variant="blue"
+                className="pbtn--block"
                 type="button"
-                className="btn-primary"
                 style={{ marginTop: '0.75rem' }}
                 onClick={() => handleTrainerNewFromDetail(detailDate)}
               >
                 + Dodaj kolejne wydarzenie
-              </button>
+              </PremiumButton>
             )}
           </div>
         </div>
@@ -550,38 +568,41 @@ const CalendarPage: React.FC = () => {
               </div>
 
               <div className="form-actions">
-                <button type="button" className="btn-secondary" onClick={closeModal}>
+                <PremiumButton type="button" variant="navy" size="sm" onClick={closeModal}>
                   Anuluj
-                </button>
-                <button
+                </PremiumButton>
+                <PremiumButton
+                  variant="blue"
+                  size="sm"
                   type="submit"
-                  className="btn-primary"
                   disabled={!formTitle.trim() || !formTime.trim() || !formLocation.trim()}
                 >
                   Zapisz
-                </button>
+                </PremiumButton>
               </div>
             </form>
 
             {editingEvent && (
               <div className="cal-form-bottom-actions">
-                <button
+                <PremiumButton
                   type="button"
-                  className="btn-attendance-open"
+                  variant="emerald"
+                  size="sm"
                   onClick={() => {
                     closeModal();
                     setAttendanceEvent(editingEvent);
                   }}
                 >
                   Sprawdź obecność
-                </button>
-                <button
+                </PremiumButton>
+                <PremiumButton
                   type="button"
-                  className="btn-delete-event"
+                  variant="rose"
+                  size="sm"
                   onClick={handleDelete}
                 >
                   Usuń wydarzenie
-                </button>
+                </PremiumButton>
               </div>
             )}
           </div>

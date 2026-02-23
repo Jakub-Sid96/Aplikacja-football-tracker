@@ -1,4 +1,5 @@
 import React from 'react';
+import { PremiumButton } from './ui/PremiumButton';
 
 interface ConfirmModalProps {
   title: string;
@@ -25,15 +26,12 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <h3 className="confirm-title">{title}</h3>
         <p className="confirm-message">{message}</p>
         <div className="confirm-actions">
-          <button className="btn-secondary confirm-cancel" onClick={onCancel}>
+          <PremiumButton variant="navy" size="sm" onClick={onCancel}>
             {cancelLabel}
-          </button>
-          <button
-            className={`confirm-btn ${danger ? 'confirm-btn--danger' : 'confirm-btn--primary'}`}
-            onClick={onConfirm}
-          >
+          </PremiumButton>
+          <PremiumButton variant={danger ? 'rose' : 'blue'} size="sm" onClick={onConfirm}>
             {confirmLabel}
-          </button>
+          </PremiumButton>
         </div>
       </div>
     </div>

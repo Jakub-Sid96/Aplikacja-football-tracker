@@ -1,0 +1,314 @@
+/* ===== PremiumButton — .pbtn namespace ===== */
+
+/* ---------- Base ---------- */
+.pbtn {
+  --pbtn-base: #0a1628;
+  --pbtn-glow: rgba(10, 22, 40, 0.35);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 2px solid transparent;
+  background: var(--pbtn-base);
+  color: #f0f2f5;
+  box-shadow: 0 2px 8px var(--pbtn-glow), 0 1px 3px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- Shine overlay ---------- */
+.pbtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 50%);
+  opacity: 1;
+  transition: opacity 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.pbtn:hover::before {
+  opacity: 0;
+}
+
+/* ---------- Variants ---------- */
+.pbtn--navy {
+  --pbtn-base: #0a1628;
+  --pbtn-glow: rgba(10, 22, 40, 0.35);
+}
+
+.pbtn--blue {
+  --pbtn-base: #1e40af;
+  --pbtn-glow: rgba(30, 64, 175, 0.3);
+}
+
+.pbtn--emerald {
+  --pbtn-base: #065f46;
+  --pbtn-glow: rgba(6, 95, 70, 0.3);
+}
+
+.pbtn--violet {
+  --pbtn-base: #5b21b6;
+  --pbtn-glow: rgba(91, 33, 182, 0.3);
+}
+
+.pbtn--rose {
+  --pbtn-base: #9f1239;
+  --pbtn-glow: rgba(159, 18, 57, 0.3);
+}
+
+.pbtn--amber {
+  --pbtn-base: #92400e;
+  --pbtn-glow: rgba(146, 64, 14, 0.3);
+}
+
+/* ---------- Hover ---------- */
+.pbtn:hover {
+  background: transparent;
+  color: var(--pbtn-base);
+  border-color: var(--pbtn-base);
+  box-shadow:
+    0 2px 12px color-mix(in srgb, var(--pbtn-glow) 43%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--pbtn-glow) 17%, transparent);
+}
+
+/* ---------- Active ---------- */
+.pbtn:active {
+  transform: scale(0.96);
+  transition:
+    transform 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    background 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- Focus-visible ---------- */
+.pbtn:focus-visible {
+  outline: 2px solid var(--pbtn-base);
+  outline-offset: 3px;
+}
+
+/* ---------- Disabled ---------- */
+.pbtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---------- Sizes ---------- */
+.pbtn--sm {
+  padding: 10px 16px;
+  font-size: 0.78rem;
+  border-radius: 8px;
+  gap: 0.35rem;
+}
+
+.pbtn--md {
+  padding: 14px 32px;
+  font-size: 0.925rem;
+  border-radius: 12px;
+  min-height: 44px;
+}
+
+.pbtn--lg {
+  padding: 18px 42px;
+  font-size: 1.05rem;
+  border-radius: 14px;
+  min-height: 52px;
+}
+
+/* ---------- Icon-only ---------- */
+.pbtn--icon-only {
+  aspect-ratio: 1;
+}
+
+.pbtn--icon-only.pbtn--sm {
+  padding: 7px;
+}
+
+.pbtn--icon-only.pbtn--md {
+  padding: 14px;
+}
+
+.pbtn--icon-only.pbtn--lg {
+  padding: 18px;
+}
+
+/* ---------- Icon ---------- */
+.pbtn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pbtn--sm .pbtn__icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+.pbtn--md .pbtn__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pbtn--lg .pbtn__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---------- Icon spin animation ---------- */
+.pbtn__icon--spinning {
+  animation: pbtn-spin 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pbtn-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Label ---------- */
+.pbtn__label {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Integration: full-width auth button ---------- */
+.btn-auth-premium {
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* --- Layout integration --- */
+
+/* Form actions: buttony wypełniają równo przestrzeń */
+.form-actions .pbtn {
+  flex: 1;
+}
+
+/* Modal confirm/edit actions */
+.confirm-actions .pbtn {
+  flex: 1;
+}
+
+/* Attendance modal footer */
+.attendance-footer-buttons .pbtn {
+  flex: 1;
+}
+
+/* Calendar form bottom — kolumna, buttony full-width */
+.cal-form-bottom-actions .pbtn {
+  width: 100%;
+}
+
+/* Request actions (accept/reject) — auto width, OK */
+
+/* Search row — auto width, OK */
+
+/* --- Modifier: full-width block button --- */
+.pbtn--block {
+  display: flex;
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* --- Modifier: back navigation ghost --- */
+.pbtn--back {
+  --pbtn-base: transparent;
+  --pbtn-glow: transparent;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--text-secondary, #94a3b8);
+  padding: 0.5rem 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  border-radius: 0;
+  transition: color 250ms ease, transform 250ms ease;
+}
+
+.pbtn--back::before {
+  display: none;
+}
+
+.pbtn--back:hover {
+  background: none;
+  border-color: transparent;
+  box-shadow: none;
+  color: #dc2626;
+  transform: translateX(-3px);
+}
+
+.pbtn--back:active {
+  transform: translateX(-3px) scale(0.98);
+}
+
+.pbtn--back:focus-visible {
+  outline-color: #94a3b8;
+}
+
+/* ---------- Ghost modifier (no background, colored icon, light hover) ---------- */
+.pbtn--ghost {
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.pbtn--ghost::before {
+  display: none;
+}
+
+.pbtn--ghost.pbtn--blue {
+  color: inherit;
+}
+
+.pbtn--ghost.pbtn--rose {
+  color: inherit;
+}
+
+.pbtn--ghost.pbtn--blue:hover {
+  color: #2563eb;
+}
+
+.pbtn--ghost.pbtn--rose:hover {
+  color: #dc2626;
+}
+
+.pbtn--ghost:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.pbtn--ghost:active {
+  background: rgba(0, 0, 0, 0.10);
+}
+
+/* --- Hover override: white (Wyloguj) --- */
+.pbtn--hover-white:hover {
+  color: #ffffff;
+  border-color: #ffffff;
+  --pbtn-glow: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 2px 12px rgba(255, 255, 255, 0.1),
+    0 0 0 4px rgba(255, 255, 255, 0.05);
+}

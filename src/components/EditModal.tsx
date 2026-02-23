@@ -1,4 +1,5 @@
 import React from 'react';
+import { PremiumButton } from './ui/PremiumButton';
 
 interface EditModalProps {
   title: string;
@@ -17,16 +18,12 @@ const EditModal: React.FC<EditModalProps> = ({ title, onSave, onCancel, canSave,
           {children}
         </div>
         <div className="confirm-actions">
-          <button className="btn-secondary confirm-cancel" onClick={onCancel}>
+          <PremiumButton variant="navy" size="sm" onClick={onCancel}>
             Anuluj
-          </button>
-          <button
-            className="confirm-btn confirm-btn--primary"
-            onClick={onSave}
-            disabled={!canSave}
-          >
+          </PremiumButton>
+          <PremiumButton variant="blue" size="sm" onClick={onSave} disabled={!canSave}>
             Zapisz zmiany
-          </button>
+          </PremiumButton>
         </div>
       </div>
     </div>

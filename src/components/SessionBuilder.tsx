@@ -4,6 +4,7 @@ import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
 import { Category } from '../types';
 import DatePickerField from './ui/DatePicker';
+import { PremiumButton } from './ui/PremiumButton';
 
 // ============================================================
 // SessionBuilder – trener tworzy raport meczowy/treningowy.
@@ -71,9 +72,9 @@ const SessionBuilder: React.FC = () => {
 
   return (
     <div className="container">
-      <button className="btn-back" onClick={() => navigate(backUrl)}>
+      <PremiumButton variant="navy" size="sm" className="pbtn--back" onClick={() => navigate(backUrl)}>
         ← Powrót do {group.name}
-      </button>
+      </PremiumButton>
 
       <h2>Nowy raport meczowy/treningowy</h2>
       <p className="section-subtitle">
@@ -114,14 +115,15 @@ const SessionBuilder: React.FC = () => {
               <option value="counter">Licznik (+1)</option>
               <option value="text">Opis tekstowy</option>
             </select>
-            <button
+            <PremiumButton
               type="button"
-              className="btn-add-cat"
+              variant="violet"
+              size="sm"
               onClick={addCategory}
               disabled={!newCatName.trim()}
             >
               Dodaj
-            </button>
+            </PremiumButton>
           </div>
         </div>
 
@@ -173,9 +175,9 @@ const SessionBuilder: React.FC = () => {
           </div>
         )}
 
-        <button type="submit" className="btn-primary" disabled={!canSubmit}>
+        <PremiumButton variant="blue" className="pbtn--block" type="submit" disabled={!canSubmit}>
           Zapisz raport meczowy/treningowy
-        </button>
+        </PremiumButton>
 
         {!canSubmit && (
           <p className="form-hint">Dodaj tytuł i co najmniej jedną kategorię.</p>
